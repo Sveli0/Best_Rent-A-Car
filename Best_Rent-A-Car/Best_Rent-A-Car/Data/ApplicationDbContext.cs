@@ -1,5 +1,4 @@
-﻿using Best_Rent_A_Car.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,6 +17,7 @@ namespace Best_Rent_A_Car.Data
             : base(options)
         {
         }
-        public DbSet<Best_Rent_A_Car.Models.Car> Car { get; set; }
+        public DbSet<Best_Rent_A_Car.Models.Car> Cars { get; set; }
+        public DbSet<Best_Rent_A_Car.Models.CarReservation> CarReservations { get; set; }
     }
 }

@@ -12,7 +12,6 @@ namespace Best_Rent_A_Car.Models
         public Car Car { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int UserID { get; set; }
         public User User { get; set; }
         public CarReservation()
         {

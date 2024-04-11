@@ -22,7 +22,7 @@ namespace Best_Rent_A_Car.Controllers
         // GET: Cars
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Car.ToListAsync());
+            return View(await _context.Cars.ToListAsync());
         }
 
         // GET: Cars/Details/5
@@ -33,7 +33,7 @@ namespace Best_Rent_A_Car.Controllers
                 return NotFound();
             }
 
-            var car = await _context.Car
+            var car = await _context.Cars
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (car == null)
             {
@@ -73,7 +73,7 @@ namespace Best_Rent_A_Car.Controllers
                 return NotFound();
             }
 
-            var car = await _context.Car.FindAsync(id);
+            var car = await _context.Cars.FindAsync(id);
             if (car == null)
             {
                 return NotFound();
@@ -124,7 +124,7 @@ namespace Best_Rent_A_Car.Controllers
                 return NotFound();
             }
 
-            var car = await _context.Car
+            var car = await _context.Cars
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (car == null)
             {
@@ -139,15 +139,15 @@ namespace Best_Rent_A_Car.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var car = await _context.Car.FindAsync(id);
-            _context.Car.Remove(car);
+            var car = await _context.Cars.FindAsync(id);
+            _context.Cars.Remove(car);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CarExists(int id)
         {
-            return _context.Car.Any(e => e.Id == id);
+            return _context.Cars.Any(e => e.Id == id);
         }
     }
 }
