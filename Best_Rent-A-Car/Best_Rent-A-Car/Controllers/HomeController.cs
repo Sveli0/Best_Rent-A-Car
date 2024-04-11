@@ -1,4 +1,5 @@
-﻿using Best_Rent_A_Car.Models;
+﻿using Best_Rent_A_Car.Data;
+using Best_Rent_A_Car.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,10 +12,12 @@ namespace Best_Rent_A_Car.Controllers
 {
     public class HomeController : Controller
     {
+        ApplicationDbContext context = new ApplicationDbContext();
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
+            
             _logger = logger;
         }
 

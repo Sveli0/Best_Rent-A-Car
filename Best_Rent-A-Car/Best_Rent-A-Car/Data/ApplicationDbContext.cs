@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Best_Rent_A_Car.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,10 @@ namespace Best_Rent_A_Car.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
+        public ApplicationDbContext()
+        {
+
+        }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
