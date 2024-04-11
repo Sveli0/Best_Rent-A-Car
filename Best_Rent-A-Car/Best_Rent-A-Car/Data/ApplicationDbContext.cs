@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Best_Rent_A_Car.Models;
 
 namespace Best_Rent_A_Car.Data
 {
@@ -17,5 +18,6 @@ namespace Best_Rent_A_Car.Data
             : base(options)
         {
         }
+        public DbSet<Best_Rent_A_Car.Models.Car> Car { get; set; }
     }
 }
