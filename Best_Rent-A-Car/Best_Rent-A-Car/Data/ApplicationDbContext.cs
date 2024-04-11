@@ -7,7 +7,7 @@ using Best_Rent_A_Car.Models;
 
 namespace Best_Rent_A_Car.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext()
         {
