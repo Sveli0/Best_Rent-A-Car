@@ -50,7 +50,10 @@ namespace Best_Rent_A_Car.Controllers
         // GET: CarReservations/Create
         public IActionResult Create()
         {
-            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Brand");
+            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new {
+                Id = c.Id,
+                FullBrandAndModel = $"{c.Brand} {c.Model}"
+            }), "Id", "FullBrandAndModel");
             return View();
         }
 
@@ -65,7 +68,8 @@ namespace Best_Rent_A_Car.Controllers
             {
                 _context.Add(carReservation);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
+                //return RedirectToAction(nameof(Index));
             }
             ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Id", carReservation.CarID);
             return View(carReservation);

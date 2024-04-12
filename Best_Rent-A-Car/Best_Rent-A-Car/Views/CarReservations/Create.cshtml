@@ -1,4 +1,5 @@
 ﻿@using Best_Rent_A_Car.Data;
+@using Microsoft.AspNetCore.Identity;
 
 @model Best_Rent_A_Car.Models.CarReservation
 
@@ -17,7 +18,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="CarID" class="control-label"></label>
-                <select asp-for="CarID" class ="form-control" asp-items="ViewBag.CarID"></select>
+                <select asp-for="CarID" class ="form-control" asp-items="ViewBag.Cars"></select>
             </div>
             <div class="form-group">
                 <label asp-for="StartDate" class="control-label"></label>
@@ -34,10 +35,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

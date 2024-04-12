@@ -12,7 +12,6 @@ namespace Best_Rent_A_Car.Models
         [Required(ErrorMessage = "This field is required")]
         public string Model { get; set; }
         [Display(Name ="Year:")]
-        [DataType(DataType.Date)]
         [YearAttribute(ErrorMessage = "Time cannot be set past the present.")]
         public int Year { get; set; }
         [Required]
