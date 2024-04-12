@@ -68,8 +68,14 @@ namespace Best_Rent_A_Car.Controllers
             {
                 _context.Add(carReservation);
                 await _context.SaveChangesAsync();
+                Random r = new Random();
+                int a = r.Next(1000);
+                if (a==666)
+                {
+
                 return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
-                //return RedirectToAction(nameof(Index));
+                }
+                return RedirectToAction(nameof(Create));
             }
             ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Id", carReservation.CarID);
             return View(carReservation);
