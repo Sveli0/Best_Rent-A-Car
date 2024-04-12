@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Best_Rent_A_Car.Models;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Best_Rent_A_Car
 {
@@ -33,13 +34,14 @@ namespace Best_Rent_A_Car
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -67,6 +69,35 @@ namespace Best_Rent_A_Car
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                string[] roles = new string[] { "Admin", "Customer" };
+
+                foreach (var role in roles) 
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                    }
+
+                }
+
+                string adminEmail = "admin@rentacar.bg";
+                string adminPassword = "Admin1234#";
+
+                if (await userManager.FindByEmailAsync(adminEmail)==null)
+                {
+                    User admin = new User();
+                    admin.UserName = adminEmail;
+                    admin.Email = adminEmail;
+                    admin.EmailConfirmed = true;
+                    await userManager.CreateAsync(admin, adminPassword);
+                    await userManager.AddToRoleAsync(admin, "Admin");
+                }
+            }
         }
     }
 }
