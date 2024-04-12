@@ -29,6 +29,36 @@ namespace Best_Rent_A_Car.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        // POST: CarReservations/Search
+        [HttpPost]
+        public async Task<IActionResult> Search(DateTime startDate, DateTime endDate)
+        {
+            var list = _context.CarReservations.Include(c => c.Car).Select(c => new
+            {
+                Brand = c.Car.Brand,
+                Model = c.Car.Model,
+                IsBusy = c.StartDate >= startDate && c.EndDate<=endDate,
+                Seats = c.Car.Seats,
+                PricePerDay = c.Car.PricePerDay,
+                Year = c.Car.Year,
+                Info = c.Car.Info
+
+            }).Where(x=>!x.IsBusy);
+
+        
+            var list1 = await list.ToListAsync();
+            ViewData["Available Cars"] = list1;
+            ViewData["StartDate"] = startDate;
+            ViewData["EndDate"] = endDate;
+            return RedirectToAction(nameof(Create));
+        }
+
+        // GET: CarReservations/Search
+        public IActionResult Search()
+        {
+            return View();
+        }
+
         // GET: CarReservations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -56,7 +86,7 @@ namespace Best_Rent_A_Car.Controllers
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["LoggedInUserId"] = loggedInUserId;
 
-            ViewData["CarID"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
+            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
             {
                 Id = c.Id,
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
@@ -78,22 +108,14 @@ namespace Best_Rent_A_Car.Controllers
                 _context.Add(carReservation);
                 await _context.SaveChangesAsync();
                 Random r = new Random();
-                int a = r.Next(1000);
-                if (a==666)
+                int a = r.Next(10);
+                if (a==6)
                 {
 
                 return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
                 }
                 return RedirectToAction(nameof(Create));
             }
-            var list = _context.Cars.OrderBy(x=>x.Brand).ThenBy(x=>x.Model).ToList();
-            var anonlist = list.Select(c => new
-            {
-                Id = c.Id,
-                FullBrandName = $"{c.Brand} {c.Model}"
-            }).ToList();
-            ViewData["CarID"] = new SelectList(anonlist, "Id", "Brand");
-            ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id", carReservation.VisibleUserID);
             return View(carReservation);
         }
 

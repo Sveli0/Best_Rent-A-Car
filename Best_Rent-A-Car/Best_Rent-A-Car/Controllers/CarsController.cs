@@ -27,24 +27,6 @@ namespace Best_Rent_A_Car.Controllers
         }
 
 
-        public async Task<IActionResult> IndexAvailableCars()
-        {
-           var list = _context.CarReservations.Include(c => c.Car).Select(c => new
-            {
-                Brand = c.Car.Brand,
-                Model = c.Car.Model,
-                IsBusy = c.StartDate < DateTime.Now && DateTime.Now < c.EndDate,
-                Seats = c.Car.Seats,
-                PricePerDay = c.Car.PricePerDay,
-                Year = c.Car.Year,
-                Info = c.Car.Info
-
-            }).ToList();
-
-
-
-            return View(list);
-        }
 
 
         // GET: Cars/Details/5
