@@ -12,12 +12,7 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ID" />
-            <div class="form-group">
-                <label asp-for="CarID" class="control-label"></label>
-                <select asp-for="CarID" class="form-control" asp-items="ViewBag.CarID"></select>
-                <span asp-validation-for="CarID" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="CarID" />
             <div class="form-group">
                 <label asp-for="StartDate" class="control-label"></label>
                 <input asp-for="StartDate" class="form-control" />
@@ -28,6 +23,7 @@
                 <input asp-for="EndDate" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
+            <input type="hidden" asp-for="VisibleUserID" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
