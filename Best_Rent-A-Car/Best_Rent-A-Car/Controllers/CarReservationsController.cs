@@ -60,9 +60,9 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string userId, int carId)
         {
-            if (id == null)
+            if (userId == null)
             {
                 return NotFound();
             }
@@ -70,7 +70,7 @@ namespace Best_Rent_A_Car.Controllers
             var carReservation = await _context.CarReservations
                 .Include(c => c.Car)
                 .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.CarID == id);
+                .FirstOrDefaultAsync(m => m.VisibleUserID == userId && m.CarID == carId);
             if (carReservation == null)
             {
                 return NotFound();
@@ -120,18 +120,21 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string userId, int carId)
         {
-            if (id == null)
+            if (userId == null)
             {
                 return NotFound();
             }
 
-            var carReservation = await _context.CarReservations.FindAsync(id);
+            var carReservation = await _context.CarReservations
+                .FirstOrDefaultAsync(m => m.CarID == carId && m.VisibleUserID == userId);
+
             if (carReservation == null)
             {
                 return NotFound();
             }
+
             ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Brand", carReservation.CarID);
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id", carReservation.VisibleUserID);
             return View(carReservation);
@@ -142,13 +145,8 @@ namespace Best_Rent_A_Car.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
+        public async Task<IActionResult> Edit([Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
         {
-            if (id != carReservation.CarID)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -177,7 +175,7 @@ namespace Best_Rent_A_Car.Controllers
         // GET: CarReservations/Delete/5
         public async Task<IActionResult> Delete(string userId, int carId)
         {
-            if (userId == null || carId == null)
+            if (userId == null)
             {
                 return NotFound();
             }
@@ -198,10 +196,8 @@ namespace Best_Rent_A_Car.Controllers
         // POST: CarReservations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string userId, int carId)
+        public async Task<IActionResult> DeleteConfirmed([Bind("CarID,VisibleUserID")] CarReservation carReservation)
         {
-            var carReservation = await _context.CarReservations
-                .FirstOrDefaultAsync(m => m.CarID == carId && m.VisibleUserID == userId);
             _context.CarReservations.Remove(carReservation);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
