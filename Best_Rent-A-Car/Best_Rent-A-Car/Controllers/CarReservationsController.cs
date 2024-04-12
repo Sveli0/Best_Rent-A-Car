@@ -50,7 +50,7 @@ namespace Best_Rent_A_Car.Controllers
         // GET: CarReservations/Create
         public IActionResult Create()
         {
-            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Id");
+            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Brand");
             return View();
         }
 

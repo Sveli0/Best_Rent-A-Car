@@ -1,7 +1,10 @@
-﻿@model Best_Rent_A_Car.Models.CarReservation
+﻿@using Best_Rent_A_Car.Data;
+
+@model Best_Rent_A_Car.Models.CarReservation
 
 @{
     ViewData["Title"] = "Create";
+    ApplicationDbContext _context = new ApplicationDbContext();
 }
 
 <h1>Create</h1>

@@ -76,6 +76,7 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
                 var user = new User { UserName = Input.Email, Email = Input.Email };
                     user.EmailConfirmed = true;
                 var result = await _userManager.CreateAsync(user, Input.Password);
+                await _userManager.AddToRoleAsync(user, "Customer");
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
