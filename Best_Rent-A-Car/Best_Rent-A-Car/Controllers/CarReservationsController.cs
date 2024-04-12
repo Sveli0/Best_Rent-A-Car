@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Best_Rent_A_Car.Data;
 using Best_Rent_A_Car.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Best_Rent_A_Car.Controllers
 {
@@ -20,6 +21,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.CarReservations.Include(c => c.Car);
