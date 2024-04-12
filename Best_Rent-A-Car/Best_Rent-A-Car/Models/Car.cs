@@ -14,10 +14,10 @@ namespace Best_Rent_A_Car.Models
         [Display(Name ="Year:")]
         [DataType(DataType.Date)]
         [YearAttribute(ErrorMessage = "Time cannot be set past the present.")]
-        public DateTime Year { get; set; }
+        public int Year { get; set; }
         [Required]
         [Display(Name = "Number of seats:")]
-        [Range(0, int.MaxValue, ErrorMessage ="Seats cannot be a negtaive number.")
+        [Range(0, int.MaxValue, ErrorMessage ="Seats cannot be a negtaive number.")]
         public int Seats { get; set; }
         [Display(Name = "Info:")]
         public string Info { get; set; }

@@ -3,17 +3,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Best_Rent_A_Car.Models.Attributes
 {
-    public class YearAttribue:ValidationAttribute
+    public class YearAttribute : ValidationAttribute
     {
         public override bool IsValid(object value)
         {
-            if (value == null) 
+            if (value == null)
             {
                 return true;
             }
 
-            DateTime date = (DateTime)value;
-            return date<=DateTime.Now;
+            int date = (int)value;
+            return date <= DateTime.Now.Year;
         }
     }
 }
