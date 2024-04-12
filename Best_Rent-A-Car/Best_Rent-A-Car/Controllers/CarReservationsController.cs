@@ -33,7 +33,7 @@ namespace Best_Rent_A_Car.Controllers
         [HttpPost]
         public async Task<IActionResult> Search(DateTime startDate, DateTime endDate)
         {
-            var list = _context.CarReservations.Include(c => c.Car).Where(x=>x.StartDate>endDate||x.EndDate<startDate);
+                var list = _context.CarReservations.Include(c => c.Car).Where(x=>x.StartDate>endDate||x.EndDate<startDate);
                 
             
             var list1 = list.Select(c => new CarViewModel
@@ -46,7 +46,7 @@ namespace Best_Rent_A_Car.Controllers
                 Info = c.Car.Info
             });
 
-            return RedirectToAction(nameof(Create), await list1.ToListAsync());
+            return Create(await list1.ToListAsync());
         }
         public class CarViewModel
         {
@@ -62,7 +62,7 @@ namespace Best_Rent_A_Car.Controllers
         // GET: CarReservations/Search
         public IActionResult Search()
         {
-            return View();
+            return View("Search");
         }
 
         // GET: CarReservations/Details/5
