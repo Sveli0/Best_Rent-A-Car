@@ -59,6 +59,13 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [MinLength(10,ErrorMessage ="EGN must be 10 symbols long.")]
+            [MaxLength(10,ErrorMessage ="EGN must be 10 symbols long.")]
+            [Display(Name ="EGN")]
+            [RegularExpression("^[0-9]*$", ErrorMessage = "EGN must contain only numbers.")]
+            public string EGN {  get; set; }    
         }
 
         public async Task OnGetAsync(string returnUrl = null)

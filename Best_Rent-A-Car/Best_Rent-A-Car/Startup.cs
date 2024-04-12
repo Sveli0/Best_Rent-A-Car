@@ -92,6 +92,7 @@ namespace Best_Rent_A_Car
                 {
                     User admin = new User();
                     admin.UserName = adminEmail;
+                    admin.EGN = "0000000000";
                     admin.Email = adminEmail;
                     admin.EmailConfirmed = true;
                     await userManager.CreateAsync(admin, adminPassword);
