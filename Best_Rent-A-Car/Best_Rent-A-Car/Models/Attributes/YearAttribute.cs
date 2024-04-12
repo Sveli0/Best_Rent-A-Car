@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Best_Rent_A_Car.Models.Attributes
 {
-    public class YearAttribue:ValidationAttribute
+    public class YearAttribute:ValidationAttribute
     {
         public override bool IsValid(object value)
         {
