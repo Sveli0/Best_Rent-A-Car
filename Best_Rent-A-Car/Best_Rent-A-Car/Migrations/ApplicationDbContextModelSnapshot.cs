@@ -41,8 +41,8 @@ namespace Best_Rent_A_Car.Migrations
                     b.Property<int>("Seats")
                         .HasColumnType("int");
 
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("Year")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

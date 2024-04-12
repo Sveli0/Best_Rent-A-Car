@@ -54,7 +54,7 @@ namespace Best_Rent_A_Car.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Year = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Seats = table.Column<int>(type: "int", nullable: false),
                     Info = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PricePerDay = table.Column<double>(type: "float", nullable: false)

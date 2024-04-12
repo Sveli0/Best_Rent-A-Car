@@ -10,11 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Best_Rent_A_Car.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:Best_Rent-A-Car/Best_Rent-A-Car/Migrations/20240412141415_initial.Designer.cs
     [Migration("20240412141415_initial")]
-========
-    [Migration("20240412155738_initial")]
->>>>>>>> CarReservationManagement:Best_Rent-A-Car/Best_Rent-A-Car/Migrations/20240412155738_initial.Designer.cs
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,8 +43,8 @@ namespace Best_Rent_A_Car.Migrations
                     b.Property<int>("Seats")
                         .HasColumnType("int");
 
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("Year")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
