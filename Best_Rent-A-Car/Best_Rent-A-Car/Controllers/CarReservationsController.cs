@@ -33,30 +33,36 @@ namespace Best_Rent_A_Car.Controllers
         [HttpPost]
         public async Task<IActionResult> Search(DateTime startDate, DateTime endDate)
         {
-            var list = _context.CarReservations.Include(c => c.Car).Select(c => new
+                var list = _context.CarReservations.Include(c => c.Car).Where(x=>x.StartDate>endDate||x.EndDate<startDate);
+                
+            
+            var list1 = list.Select(c => new CarViewModel
             {
                 Brand = c.Car.Brand,
                 Model = c.Car.Model,
-                IsBusy = c.StartDate >= startDate && c.EndDate<=endDate,
                 Seats = c.Car.Seats,
                 PricePerDay = c.Car.PricePerDay,
                 Year = c.Car.Year,
                 Info = c.Car.Info
+            });
 
-            }).Where(x=>!x.IsBusy);
-
-        
-            var list1 = await list.ToListAsync();
-            ViewData["AvailableCars"] = list1;
-            ViewData["StartDate"] = startDate;
-            ViewData["EndDate"] = endDate;
-            return RedirectToAction(nameof(Create));
+            return Create(await list1.ToListAsync());
         }
+        public class CarViewModel
+        {
+            public string Brand { get; set; }
 
+            public string Model { get; set; }
+
+            public int Seats { get; set; }
+            public double PricePerDay { get; set; }
+            public int Year { get; set; }
+            public string Info { get; set; }
+        }
         // GET: CarReservations/Search
         public IActionResult Search()
         {
-            return View();
+            return View("Search");
         }
 
         // GET: CarReservations/Details/5
@@ -79,9 +85,22 @@ namespace Best_Rent_A_Car.Controllers
             return View(carReservation);
         }
 
-        // GET: CarReservations/Create
-        public IActionResult Create()
+        public class CreateViewModel
         {
+            public CarReservation CarReservation { get; set; }
+            public List<CarViewModel> AvailableCars { get; set; } 
+        }
+
+
+        // GET: CarReservations/Create
+        public IActionResult Create(List<CarViewModel> availableCars)
+        {
+            var viewModel = new CreateViewModel
+            {
+                CarReservation = new CarReservation(),
+                AvailableCars = availableCars
+            };
+
 
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["LoggedInUserId"] = loggedInUserId;
@@ -92,7 +111,7 @@ namespace Best_Rent_A_Car.Controllers
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
             }), "Id", "FullBrandAndModel"); ;
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
+            return View(viewModel);
         }
 
         // POST: CarReservations/Create
