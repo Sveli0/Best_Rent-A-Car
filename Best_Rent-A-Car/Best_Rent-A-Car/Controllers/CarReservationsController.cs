@@ -47,7 +47,7 @@ namespace Best_Rent_A_Car.Controllers
 
         
             var list1 = await list.ToListAsync();
-            ViewData["Available Cars"] = list1;
+            ViewData["AvailableCars"] = list1;
             ViewData["StartDate"] = startDate;
             ViewData["EndDate"] = endDate;
             return RedirectToAction(nameof(Create));

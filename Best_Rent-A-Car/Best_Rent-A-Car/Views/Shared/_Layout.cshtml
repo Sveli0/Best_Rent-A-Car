@@ -33,7 +33,7 @@
                         @if (User.IsInRole("Customer"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="CarReservations" asp-action="Search">Make A Reservation</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="CarReservations" asp-action="Create">Make A Reservation</a>
                             </li>
                         }
                         else if (User.IsInRole("Admin"))
