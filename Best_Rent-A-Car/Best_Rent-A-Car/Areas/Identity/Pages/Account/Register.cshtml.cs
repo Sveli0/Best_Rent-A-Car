@@ -74,18 +74,12 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new User { UserName = Input.Email, Email = Input.Email };
+                    user.EmailConfirmed = true;
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
