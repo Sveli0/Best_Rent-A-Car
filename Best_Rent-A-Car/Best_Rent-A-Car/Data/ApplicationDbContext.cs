@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Best_Rent_A_Car.Models;
+using System.Reflection.Emit;
 
 namespace Best_Rent_A_Car.Data
 {
@@ -17,7 +18,19 @@ namespace Best_Rent_A_Car.Data
             : base(options)
         {
         }
+
         public DbSet<Best_Rent_A_Car.Models.Car> Cars { get; set; }
         public DbSet<Best_Rent_A_Car.Models.CarReservation> CarReservations { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+
+            builder
+            .Entity<CarReservation>()
+            .HasKey(x => new { x.CarID, x.VisibleUserID });
+
+
+            base.OnModelCreating(builder);
+        }
     }
 }

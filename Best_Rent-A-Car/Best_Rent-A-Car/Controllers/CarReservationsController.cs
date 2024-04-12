@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Best_Rent_A_Car.Data;
 using Best_Rent_A_Car.Models;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components;
+using System.Security.Claims;
 
 namespace Best_Rent_A_Car.Controllers
 {
@@ -21,10 +23,9 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations
-        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.CarReservations.Include(c => c.Car);
+            var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -38,7 +39,8 @@ namespace Best_Rent_A_Car.Controllers
 
             var carReservation = await _context.CarReservations
                 .Include(c => c.Car)
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(m => m.CarID == id);
             if (carReservation == null)
             {
                 return NotFound();
@@ -50,10 +52,16 @@ namespace Best_Rent_A_Car.Controllers
         // GET: CarReservations/Create
         public IActionResult Create()
         {
-            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new {
+
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewData["LoggedInUserId"] = loggedInUserId;
+
+            ViewData["CarID"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
+            {
                 Id = c.Id,
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
-            }), "Id", "FullBrandAndModel");
+            }), "Id", "FullBrandAndModel"); ;
+            ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -62,10 +70,11 @@ namespace Best_Rent_A_Car.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,CarID,StartDate,EndDate")] CarReservation carReservation)
+        public async Task<IActionResult> Create([Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
         {
             if (ModelState.IsValid)
             {
+
                 _context.Add(carReservation);
                 await _context.SaveChangesAsync();
                 Random r = new Random();
@@ -77,7 +86,8 @@ namespace Best_Rent_A_Car.Controllers
                 }
                 return RedirectToAction(nameof(Create));
             }
-            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Id", carReservation.CarID);
+            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Brand", carReservation.CarID);
+            ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id", carReservation.VisibleUserID);
             return View(carReservation);
         }
 
@@ -94,7 +104,8 @@ namespace Best_Rent_A_Car.Controllers
             {
                 return NotFound();
             }
-            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Id", carReservation.CarID);
+            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Brand", carReservation.CarID);
+            ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id", carReservation.VisibleUserID);
             return View(carReservation);
         }
 
@@ -103,9 +114,9 @@ namespace Best_Rent_A_Car.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,CarID,StartDate,EndDate")] CarReservation carReservation)
+        public async Task<IActionResult> Edit(int id, [Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
         {
-            if (id != carReservation.ID)
+            if (id != carReservation.CarID)
             {
                 return NotFound();
             }
@@ -119,7 +130,7 @@ namespace Best_Rent_A_Car.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CarReservationExists(carReservation.ID))
+                    if (!CarReservationExists(carReservation.CarID))
                     {
                         return NotFound();
                     }
@@ -130,7 +141,8 @@ namespace Best_Rent_A_Car.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Id", carReservation.CarID);
+            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Brand", carReservation.CarID);
+            ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id", carReservation.VisibleUserID);
             return View(carReservation);
         }
 
@@ -144,7 +156,8 @@ namespace Best_Rent_A_Car.Controllers
 
             var carReservation = await _context.CarReservations
                 .Include(c => c.Car)
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(m => m.CarID == id);
             if (carReservation == null)
             {
                 return NotFound();
@@ -166,7 +179,7 @@ namespace Best_Rent_A_Car.Controllers
 
         private bool CarReservationExists(int id)
         {
-            return _context.CarReservations.Any(e => e.ID == id);
+            return _context.CarReservations.Any(e => e.CarID == id);
         }
     }
 }
