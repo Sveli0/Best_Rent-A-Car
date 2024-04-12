@@ -61,8 +61,10 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             [Required]
-            [StringLength(10,ErrorMessage ="EGN must be 10 symbols long.")]
+            [MinLength(10,ErrorMessage ="EGN must be 10 symbols long.")]
+            [MaxLength(10,ErrorMessage ="EGN must be 10 symbols long.")]
             [Display(Name ="EGN")]
+            [RegularExpression("^[0-9]*$", ErrorMessage = "EGN must contain only numbers.")]
             public string EGN {  get; set; }    
         }
 
