@@ -86,7 +86,13 @@ namespace Best_Rent_A_Car.Controllers
                 }
                 return RedirectToAction(nameof(Create));
             }
-            ViewData["CarID"] = new SelectList(_context.Cars, "Id", "Brand", carReservation.CarID);
+            var list = _context.Cars.OrderBy(x=>x.Brand).ThenBy(x=>x.Model).ToList();
+            var anonlist = list.Select(c => new
+            {
+                Id = c.Id,
+                FullBrandName = $"{c.Brand} {c.Model}"
+            }).ToList();
+            ViewData["CarID"] = new SelectList(anonlist, "Id", "Brand");
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id", carReservation.VisibleUserID);
             return View(carReservation);
         }

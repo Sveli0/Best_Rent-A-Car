@@ -26,6 +26,27 @@ namespace Best_Rent_A_Car.Controllers
             return View(await _context.Cars.ToListAsync());
         }
 
+
+        public async Task<IActionResult> IndexAvailableCars()
+        {
+           var list = _context.CarReservations.Include(c => c.Car).Select(c => new
+            {
+                Brand = c.Car.Brand,
+                Model = c.Car.Model,
+                IsBusy = c.StartDate < DateTime.Now && DateTime.Now < c.EndDate,
+                Seats = c.Car.Seats,
+                PricePerDay = c.Car.PricePerDay,
+                Year = c.Car.Year,
+                Info = c.Car.Info
+
+            }).ToList();
+
+
+
+            return View(list);
+        }
+
+
         // GET: Cars/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -45,7 +66,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: Cars/Create
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -56,7 +77,7 @@ namespace Best_Rent_A_Car.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Brand,Model,Year,Seats,Info,PricePerDay")] Car car)
         {
             if (ModelState.IsValid)
@@ -69,7 +90,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: Cars/Edit/5
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
