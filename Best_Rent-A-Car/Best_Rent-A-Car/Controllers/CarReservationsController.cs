@@ -194,9 +194,9 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string userId, int carId)
         {
-            if (id == null)
+            if (userId == null || carId == null)
             {
                 return NotFound();
             }
@@ -204,7 +204,8 @@ namespace Best_Rent_A_Car.Controllers
             var carReservation = await _context.CarReservations
                 .Include(c => c.Car)
                 .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.CarID == id);
+                .FirstOrDefaultAsync(m => m.CarID == carId && m.VisibleUserID == userId);
+
             if (carReservation == null)
             {
                 return NotFound();
@@ -216,9 +217,10 @@ namespace Best_Rent_A_Car.Controllers
         // POST: CarReservations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string userId, int carId)
         {
-            var carReservation = await _context.CarReservations.FindAsync(id);
+            var carReservation = await _context.CarReservations
+                .FirstOrDefaultAsync(m => m.CarID == carId && m.VisibleUserID == userId);
             _context.CarReservations.Remove(carReservation);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

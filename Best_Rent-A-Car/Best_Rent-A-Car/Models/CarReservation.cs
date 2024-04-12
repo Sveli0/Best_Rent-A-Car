@@ -14,11 +14,13 @@ namespace Best_Rent_A_Car.Models
         public int CarID { get; set; }
         public Car Car { get; set; }
         [Display(Name = "Start Date")]
+        [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
         [Display(Name = "End Date")]
+        [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
         [ForeignKey("User")]
-        public string VisibleUserID { get; set; }
+        public string VisibleUserID { get ; set; }
         public User User { get; set; }
         public CarReservation()
         {
