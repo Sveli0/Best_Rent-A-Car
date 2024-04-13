@@ -190,6 +190,9 @@ namespace Best_Rent_A_Car.Controllers
         [Microsoft.AspNetCore.Mvc.Route("CarReservations/Reserve")]
         public IActionResult Reserve(CreateViewModel viewModel)
         {
+            if (ModelState.IsValid)
+            {
+
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["LoggedInUserId"] = loggedInUserId;
 
@@ -202,6 +205,8 @@ namespace Best_Rent_A_Car.Controllers
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
 
             return View("Create", viewModel);
+            }
+            return View("Search");
         }
 
         // POST: CarReservations/Create

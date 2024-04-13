@@ -28,6 +28,7 @@ namespace Best_Rent_A_Car.Models
         [Display(Name = "End Date")]
         [DataType(DataType.Date)]
         [DateAttribute(ErrorMessage ="The date cannot be previous to now")]
+        [EndDate(ErrorMessage="The date cannot be previous to the start date.")]
         public DateTime EndDate { get; set; }
         [ForeignKey("User")]
         public string VisibleUserID { get ; set; }
