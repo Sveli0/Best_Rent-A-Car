@@ -21,15 +21,14 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: Cars
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Cars.ToListAsync());
         }
 
-
-
-
         // GET: Cars/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -124,6 +123,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: Cars/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Best_Rent_A_Car.Data;
 using Best_Rent_A_Car.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Best_Rent_A_Car.Controllers
 {
@@ -24,6 +23,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User);
@@ -32,24 +32,24 @@ namespace Best_Rent_A_Car.Controllers
 
         // POST: CarReservations/Search
         [HttpPost]
-        public  IActionResult Search(DateTime startDate, DateTime endDate)
+        public IActionResult Search(DateTime startDate, DateTime endDate)
         {
             var list = _context.CarReservations.Include(c => c.Car).Where(x => x.StartDate > endDate || x.EndDate < startDate);
 
 
             var list1 = list.Select(c => new CarViewModel
             {
-                
+
                 PricePerDay = c.Car.PricePerDay,
                 Year = c.Car.Year,
                 Info = $"{c.Car.Brand} {c.Car.Model} Seats: {c.Car.Seats} Price Per Day: {c.Car.PricePerDay}"
             });
-                
-            
+
+
             var viewModel = new CreateViewModel()
             {
                 CarReservation = new CarReservation(),
-                AvailableCars =  list1.ToList()
+                AvailableCars = list1.ToList()
             };
 
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -64,18 +64,20 @@ namespace Best_Rent_A_Car.Controllers
         }
         public class CarViewModel
         {
-          
+
             public double PricePerDay { get; set; }
             public int Year { get; set; }
             public string Info { get; set; }
         }
         // GET: CarReservations/Search
+        // TODO: Authorize
         public IActionResult Search()
         {
             return View("Search");
         }
 
         // GET: CarReservations/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(string userId, int carId)
         {
             if (userId == null)
@@ -113,9 +115,8 @@ namespace Best_Rent_A_Car.Controllers
 
 
         // GET: CarReservations/Create
-        [HttpGet]
-        [Microsoft.AspNetCore.Mvc.Route("CarReservations/Create")]
-        public IActionResult Create(CreateViewModel viewModel)
+        [Authorize]
+        public IActionResult Create(List<CarViewModel> availableCars)
         {
 
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -147,7 +148,7 @@ namespace Best_Rent_A_Car.Controllers
             }), "Id", "FullBrandAndModel"); ;
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
 
-            return View("Create",viewModel);
+            return View("Create", viewModel);
         }
 
         // POST: CarReservations/Create
@@ -199,6 +200,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string userId, int carId)
         {
             if (userId == null)
@@ -252,6 +254,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string userId, int carId)
         {
             if (userId == null)
