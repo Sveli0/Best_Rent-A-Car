@@ -29,6 +29,35 @@ namespace Best_Rent_A_Car.Controllers
             var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User);
             return View(await applicationDbContext.ToListAsync());
         }
+        //Get: CarReservations/IndexUserReservations
+        [Authorize]
+        public async Task<IActionResult> IndexUserReservations()
+        {
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userOrders = _context.CarReservations.Include(c => c.Car).Where(x => x.VisibleUserID==loggedInUserId);
+
+            var userOrdersModels = userOrders.Select(c => new ReservationIndexViewModel
+            {
+                carID = c.CarID,
+                StartDate = c.StartDate,
+                EndDate=c.EndDate,
+                Info = $"{c.Car.Brand} {c.Car.Model} Seats: {c.Car.Seats} Price Per Day: {c.Car.PricePerDay}"
+            });
+            
+            return View(await userOrdersModels.ToListAsync());
+        }
+
+        public class ReservationIndexViewModel
+        {
+            public int carID { get; set; }
+
+            public DateTime StartDate { get; set; }
+            
+            public DateTime EndDate { get; set; }
+            public string Info { get; set; }
+
+        }
 
         // POST: CarReservations/Search
         [HttpPost]
@@ -181,7 +210,7 @@ namespace Best_Rent_A_Car.Controllers
                     return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexUserReservations));
             }
             CreateViewModel viewModel = new CreateViewModel();
             return View(viewModel);
