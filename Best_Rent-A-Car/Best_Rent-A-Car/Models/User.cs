@@ -15,9 +15,10 @@ namespace Best_Rent_A_Car.Models
         [MaxLength(10, ErrorMessage = "EGN must be 10 symbols long.")]
         [Display(Name = "EGN")]
         [RegularExpression("^[0-9]*$", ErrorMessage = "EGN must contain only numbers.")]
-        [UniqueEGN]
         public string EGN { get; set; }
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
         
     }
