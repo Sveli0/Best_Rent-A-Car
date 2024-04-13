@@ -72,7 +72,7 @@ namespace Best_Rent_A_Car.Controllers
         // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id,string password,string phonenumber, [Bind("Id,EGN,PasswordHash,Email,UserName,FirstName,LastName,PhoneNumber")] User user)
+        public async Task<IActionResult> Edit(string id,string password, [Bind("Id,EGN,PasswordHash,Email,UserName")] User user)
         {
             if (id != user.Id)
             {
@@ -89,9 +89,6 @@ namespace Best_Rent_A_Car.Controllers
                     user2.EGN = user.EGN;
                     user2.Email = user.Email;
                     user2.UserName = user.UserName;
-                    user2.FirstName = user.FirstName;
-                    user2.LastName = user.LastName;
-                    user2.PhoneNumber = phonenumber;
                     if (password != null)
                     {
                         string newPassword = _userManager.PasswordHasher.HashPassword(user, password);
@@ -112,9 +109,8 @@ namespace Best_Rent_A_Car.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            EditViewModel model = new EditViewModel();
-            model.User = user;
-            return View(model);
+
+            return View(user);
         }
 
         // GET: UserController/Delete/5
@@ -162,6 +158,12 @@ namespace Best_Rent_A_Car.Controllers
             [UniqueEmail]
             [Display(Name = "Email")]
             public string Email { get; set; }
+
+            [DataType(DataType.Password)]
+            [Display(Name = "Confirm password")]
+            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            public string ConfirmPassword { get; set; }
+
             [Required]
             [MinLength(10, ErrorMessage = "EGN must be 10 symbols long.")]
             [MaxLength(10, ErrorMessage = "EGN must be 10 symbols long.")]
