@@ -1,13 +1,11 @@
-﻿@model IEnumerable<Best_Rent_A_Car.Controllers.CarReservationsController.ReservationIndexViewModel>
+﻿@model IEnumerable<Best_Rent_A_Car.Models.CarReservation>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Info)
+                @Html.DisplayNameFor(model => model.Car)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.StartDate)
@@ -16,7 +14,7 @@
                 @Html.DisplayNameFor(model => model.EndDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Pending)
+                @Html.DisplayNameFor(model => model.User)
             </th>
             <th></th>
         </tr>
@@ -25,7 +23,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Info)
+                @Html.DisplayFor(modelItem => item.Car.Brand)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartDate)
@@ -34,11 +32,12 @@
                 @Html.DisplayFor(modelItem => item.EndDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Pending)
+                @Html.DisplayFor(modelItem => item.User.UserName)
             </td>
             <td>
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Accept", "Accept", new { userId = item.User.Id, carId = item.CarID }) |
+                @Html.ActionLink("Decline", "Decline", new { userId = item.User.Id, carId = item.CarID }) |
+                @Html.ActionLink("Details", "Details", new { userId = item.User.Id, carId = item.CarID })
             </td>
         </tr>
 }
