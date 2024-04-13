@@ -1,8 +1,6 @@
 ﻿@model IEnumerable<Best_Rent_A_Car.Models.CarReservation>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
@@ -37,9 +35,9 @@
                 @Html.DisplayFor(modelItem => item.User.UserName)
             </td>
             <td>
-                @Html.ActionLink("Accept", "Accept", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Decline", "Decline", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) 
+                @Html.ActionLink("Accept", "Accept", new { userId = item.User.Id, carId = item.CarID }) |
+                @Html.ActionLink("Decline", "Decline", new { userId = item.User.Id, carId = item.CarID }) |
+                @Html.ActionLink("Details", "Details", new { userId = item.User.Id, carId = item.CarID })
             </td>
         </tr>
 }

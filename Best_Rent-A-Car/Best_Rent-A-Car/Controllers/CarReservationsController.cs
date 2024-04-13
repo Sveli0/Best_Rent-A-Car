@@ -50,12 +50,17 @@ namespace Best_Rent_A_Car.Controllers
                 carID = c.CarID,
                 StartDate = c.StartDate,
                 EndDate=c.EndDate,
+                Pending = PendingEnum(c.Pending),
                 Info = $"{c.Car.Brand} {c.Car.Model} Seats: {c.Car.Seats} Price Per Day: {c.Car.PricePerDay}"
             });
             
             return View(await userOrdersModels.ToListAsync());
         }
-
+        private static string PendingEnum(bool pending) 
+        {
+            if (pending) return "Not Approved";
+            else return "Appoved";
+        }
         public class ReservationIndexViewModel
         {
             public int carID { get; set; }
@@ -64,6 +69,7 @@ namespace Best_Rent_A_Car.Controllers
             
             public DateTime EndDate { get; set; }
             public string Info { get; set; }
+            public string Pending { get; set; } 
 
         }
 
@@ -304,7 +310,7 @@ namespace Best_Rent_A_Car.Controllers
             return View(carReservation);
         }
 
-        // GET: CarReservations/Decline
+        // GET: CarReservations/Decline/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Decline(string userId, int carId)
         {
@@ -344,10 +350,45 @@ namespace Best_Rent_A_Car.Controllers
             _context.CarReservations.Remove(carReservation);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+
+
         }
 
-        
-        
+        // GET: CarReservations/Accept/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Accept(string userId, int carId)
+        {
+            if (userId == null)
+            {
+                return NotFound();
+            }
+
+            var carReservation = await _context.CarReservations
+                .Include(c => c.Car)
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(m => m.CarID == carId && m.VisibleUserID == userId);
+
+            if (carReservation == null)
+            {
+                return NotFound();
+            }
+
+            return View(carReservation);
+        }
+
+        // POST: CarReservations/Accept
+        [HttpPost, ActionName("Accept")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AcceptConfirm([Bind("CarID,VisibleUserID")] CarReservation carReservation)
+        {
+            CarReservation contextReservation = await _context.CarReservations
+                .FirstOrDefaultAsync(m => m.CarID == carReservation.CarID && m.VisibleUserID == carReservation.VisibleUserID);
+            contextReservation.Pending = 1 == 2;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(PendingIndex));
+        }
+
+
 
         private bool CarReservationExists(int id)
         {
