@@ -29,9 +29,9 @@ namespace Best_Rent_A_Car.Controllers
             var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User);
             return View(await applicationDbContext.ToListAsync());
         }
-        //Get: CarReservations/IndexUserReservations
+        //Get: CarReservations/UserReservations
         [Authorize]
-        public async Task<IActionResult> IndexUserReservations()
+        public async Task<IActionResult> UserReservations()
         {
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -42,7 +42,7 @@ namespace Best_Rent_A_Car.Controllers
                 carID = c.CarID,
                 StartDate = c.StartDate,
                 EndDate = c.EndDate,
-                Info = $"{c.Car.Brand} {c.Car.Model} Seats: {c.Car.Seats} Price Per Day: {c.Car.PricePerDay}"
+                Info = $"{c.Car.Brand} {c.Car.Model} {c.Car.Year} | Seats: {c.Car.Seats} | Price Per Day: {c.Car.PricePerDay}"
             });
 
             return View(await userOrdersModels.ToListAsync());
@@ -64,16 +64,15 @@ namespace Best_Rent_A_Car.Controllers
         public IActionResult Search(DateTime startDate, DateTime endDate)
         {
             var availableCarsQuery = _context.Cars
-    .Where(c => !_context.CarReservations
-        .Any(cr => cr.CarID == c.Id &&
-                   (cr.StartDate <= endDate && cr.EndDate >= startDate)));
+                .Where(c => !_context.CarReservations
+                .Any(cr => cr.CarID == c.Id &&
+                (cr.StartDate <= endDate && cr.EndDate >= startDate)));
 
             var availableCarsList = availableCarsQuery
                 .Select(c => new ReservationViewModel
                 {
                     carID = c.Id,
-                    Year = c.Year,
-                    Info = $"{c.Brand} {c.Model} Seats: {c.Seats} Price Per Day: {c.PricePerDay}"
+                    Info = $"{c.Brand} {c.Model} {c.Year} | Seats: {c.Seats} | Price Per Day: {c.PricePerDay}"
                 })
                 .ToList();
 
@@ -82,14 +81,13 @@ namespace Best_Rent_A_Car.Controllers
                 CarReservation = new CarReservation(),
                 AvailableCars = availableCarsList
             };
+
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["LoggedInUserId"] = loggedInUserId;
 
             ViewData["StartDate"] = startDate.ToString();
 
             ViewData["EndDate"] = startDate;
-
-
 
             viewModel.CarReservation.VisibleUserID = loggedInUserId;
             viewModel.CarReservation.EndDate = endDate;
@@ -101,18 +99,12 @@ namespace Best_Rent_A_Car.Controllers
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
             }), "Id", "FullBrandAndModel");
 
-
-            return View("CreateSearch", viewModel);
-
-
-
+            return View("Reserve", viewModel);
         }
         public class ReservationViewModel
         {
             public int carID { get; set; }
-            public int Year { get; set; }
             public string Info { get; set; }
-
         }
         // GET: CarReservations/Search
         // TODO: Authorize
@@ -134,6 +126,7 @@ namespace Best_Rent_A_Car.Controllers
                 .Include(c => c.Car)
                 .Include(c => c.User)
                 .FirstOrDefaultAsync(m => m.VisibleUserID == userId && m.CarID == carId);
+
             if (carReservation == null)
             {
                 return NotFound();
@@ -158,28 +151,25 @@ namespace Best_Rent_A_Car.Controllers
         [Authorize]
         public IActionResult Create(CarReservation carReservation)
         {
-
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["LoggedInUserId"] = loggedInUserId;
-
 
             ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
             {
                 Id = c.Id,
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
-            }), "Id", "FullBrandAndModel"); ;
+            }), "Id", "FullBrandAndModel");
+
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
             return View(carReservation);
         }
 
         [HttpGet]
-        [Microsoft.AspNetCore.Mvc.Route("CarReservations/CreateSearch")]
-        public IActionResult CreateSearch(CreateViewModel viewModel)
+        [Microsoft.AspNetCore.Mvc.Route("CarReservations/Reserve")]
+        public IActionResult Reserve(CreateViewModel viewModel)
         {
-
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["LoggedInUserId"] = loggedInUserId;
-
 
             ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
             {
@@ -192,29 +182,27 @@ namespace Best_Rent_A_Car.Controllers
             return View("Create", viewModel);
         }
 
-
         // POST: CarReservations/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateSearch([Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
+        public async Task<IActionResult> Reserve([Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
         {
-
             if (ModelState.IsValid)
             {
-
                 _context.Add(carReservation);
                 await _context.SaveChangesAsync();
                 Random r = new Random();
                 int a = r.Next(10);
+
                 if (a == 6)
                 {
 
                     return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
                 }
 
-                return RedirectToAction(nameof(IndexUserReservations));
+                return RedirectToAction(nameof(UserReservations));
             }
             CreateViewModel viewModel = new CreateViewModel();
             return View(viewModel);
