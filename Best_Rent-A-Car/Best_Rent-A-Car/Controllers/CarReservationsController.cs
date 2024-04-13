@@ -71,6 +71,7 @@ namespace Best_Rent_A_Car.Controllers
             public DateTime EndDate { get; set; }
             public string Info { get; set; }
             public string Pending { get; set; }
+            public double TotalAmount { get; set; } = 0;
 
         }
 
@@ -78,7 +79,7 @@ namespace Best_Rent_A_Car.Controllers
         [HttpPost]
         public IActionResult Search(DateTime startDate, DateTime endDate)
         {
-            if (ModelState.IsValid)
+            if (startDate<endDate&& endDate>DateTime.Now)
             {
                 var availableCarsQuery = _context.Cars
                     .Where(c => !_context.CarReservations
