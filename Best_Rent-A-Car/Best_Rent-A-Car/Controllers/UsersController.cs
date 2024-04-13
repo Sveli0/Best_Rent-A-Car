@@ -1,5 +1,6 @@
 ﻿using Best_Rent_A_Car.Data;
 using Best_Rent_A_Car.Models;
+using Best_Rent_A_Car.Models.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -151,6 +152,34 @@ namespace Best_Rent_A_Car.Controllers
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
+            [Required]
+            [EmailAddress]
+            [UniqueEmail]
+            [Display(Name = "Email")]
+            public string Email { get; set; }
+
+            [DataType(DataType.Password)]
+            [Display(Name = "Confirm password")]
+            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            public string ConfirmPassword { get; set; }
+
+            [Required]
+            [MinLength(10, ErrorMessage = "EGN must be 10 symbols long.")]
+            [MaxLength(10, ErrorMessage = "EGN must be 10 symbols long.")]
+            [Display(Name = "EGN")]
+            [RegularExpression("^[0-9]*$", ErrorMessage = "EGN must contain only numbers.")]
+            [UniqueEGN]
+            public string EGN { get; set; }
+
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string UserName { get; set; }
+            [Phone]
+            [Display(Name = "Phone number")]
+            [MinLength(7, ErrorMessage = "Phone number must between 7-15 symbols long.")]
+            [MaxLength(15, ErrorMessage = "Phone number must between 7-15 symbols long.")]
+            [RegularExpression("^[0-9]*$", ErrorMessage = "Phone number must contain only numbers.")]
+            public string PhoneNumber { get; set; }
         }
     }
 }
