@@ -112,6 +112,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: UserController/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string? id)
         {
             if (id == null)
