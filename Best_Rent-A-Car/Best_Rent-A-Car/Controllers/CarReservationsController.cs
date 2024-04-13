@@ -36,8 +36,7 @@ namespace Best_Rent_A_Car.Controllers
         {
             var list = _context.CarReservations.Include(c => c.Car).Where(x => x.StartDate > endDate || x.EndDate < startDate);
 
-
-            var list1 = list.Select(c => new ReservationViewModel
+            var list1 = list.Select(c => new ReservationViewModel()
             {
                 carID = c.CarID,
                 Year = c.Car.Year,
@@ -50,16 +49,25 @@ namespace Best_Rent_A_Car.Controllers
                 CarReservation = new CarReservation(),
                 AvailableCars = list1.ToList()
             };
-
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewData["LoggedInUserId"] = loggedInUserId;
+
+            ViewData["StartDate"] = startDate.ToString();
+
+            ViewData["EndDate"] = startDate;
+
+            
+
             viewModel.CarReservation.VisibleUserID = loggedInUserId;
-            viewModel.EndDate = endDate;
-            viewModel.StartDate = startDate;
-           viewModel.carID = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
+            viewModel.CarReservation.EndDate = endDate;
+            viewModel.CarReservation.StartDate = startDate;
+
+            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Where(x=>list1.Select(c=>c.carID).ToList().Contains(x.Id)).Select(c => new
             {
                 Id = c.Id,
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
-            }), "Id", "FullBrandAndModel"); ;
+            }), "Id", "FullBrandAndModel");
+
 
             return View("CreateSearch", viewModel);
 
@@ -104,13 +112,7 @@ namespace Best_Rent_A_Car.Controllers
         public class CreateViewModel
         {
             public CarReservation CarReservation { get; set; }
-            [DataType(DataType.Date)]
-            public DateTime EndDate { get; set; }
-            [DataType(DataType.Date)]
-            public DateTime StartDate { get; set; }
             public List<ReservationViewModel> AvailableCars { get; set; }
-            public SelectList carID { get; set; }
-
             public CreateViewModel()
             {
                 CarReservation = new CarReservation();
@@ -150,7 +152,8 @@ namespace Best_Rent_A_Car.Controllers
             {
                 Id = c.Id,
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
-            }), "Id", "FullBrandAndModel"); ;
+            }), "Id", "FullBrandAndModel");
+
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
 
             return View("Create", viewModel);
@@ -164,8 +167,10 @@ namespace Best_Rent_A_Car.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSearch([Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
         {
+            
             if (ModelState.IsValid)
             {
+                
                 _context.Add(carReservation);
                 await _context.SaveChangesAsync();
                 Random r = new Random();
@@ -176,9 +181,10 @@ namespace Best_Rent_A_Car.Controllers
                     return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
                 }
 
-                return RedirectToAction(nameof(CreateSearch));
+                return RedirectToAction(nameof(Index));
             }
-            return View(carReservation);
+            CreateViewModel viewModel = new CreateViewModel();
+            return View(viewModel);
         }
 
         // GET: CarReservations/Edit/5
