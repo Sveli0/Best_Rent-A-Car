@@ -6,6 +6,12 @@ namespace Best_Rent_A_Car.Models
 {
     public class Car
     {
+        /// <summary>
+        /// Car Model for the database, as well as validations and display names for the properties
+        /// </summary>
+        /// This is a model class for the cars, it has field for the id, brand, model, year, seats, and info of the car, 
+        /// also includes the price per day of the car.
+        /// There are data annotations for the validations of the fields.
         public int Id { get; set; }
         [Required(ErrorMessage = "This field is required")]
         public string Brand { get; set; }
