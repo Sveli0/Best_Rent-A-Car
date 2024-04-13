@@ -10,6 +10,7 @@ using Best_Rent_A_Car.Models;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using Best_Rent_A_Car.Models.Attributes;
 
 namespace Best_Rent_A_Car.Controllers
 {
@@ -66,9 +67,13 @@ namespace Best_Rent_A_Car.Controllers
         public class ReservationIndexViewModel
         {
             public int carID { get; set; }
-
+            [Display(Name = "Start Date")]
+            [DataType(DataType.Date)]
+            [DateAttribute]
             public DateTime StartDate { get; set; }
-
+            [Display(Name = "End Date")]
+            [DataType(DataType.Date)]
+            [DateAttribute(ErrorMessage = "Date is past, or too far in the future.")]
             public DateTime EndDate { get; set; }
             public string Info { get; set; }
             public string Pending { get; set; }
