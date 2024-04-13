@@ -16,6 +16,10 @@ namespace Best_Rent_A_Car.Controllers
 {
     public class CarReservationsController : Controller
     {
+        /// <summary>
+        /// A controller dealing with reservations
+        /// </summary>
+
         private readonly ApplicationDbContext _context;
 
         public CarReservationsController(ApplicationDbContext context)
@@ -24,13 +28,20 @@ namespace Best_Rent_A_Car.Controllers
         }
 
 
+        /// <summary>
+        /// Shows a list for the admin, which contains reservations that have yet to be approved
+        /// </summary>
+        /// <returns></returns>
         // GET: CarReservations/PendingIndex
-
         public async Task<IActionResult> PendingIndex()
         {
             var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User).Where(c => c.Pending);
             return View(await applicationDbContext.ToListAsync());
         }
+        /// <summary>
+        /// Shows a list for the admins of all approved reservations
+        /// </summary>
+        /// <returns></returns>
         // GET: CarReservations
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
@@ -38,6 +49,10 @@ namespace Best_Rent_A_Car.Controllers
             var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User).Where(c => !c.Pending);
             return View(await applicationDbContext.ToListAsync());
         }
+        /// <summary>
+        /// Shows a speciifc users reservation, used for the functionality of a user being able to see their own reservations
+        /// </summary>
+        /// <returns></returns>
         //Get: CarReservations/UserReservations
         [Authorize]
         public async Task<IActionResult> UserReservations()
@@ -59,11 +74,19 @@ namespace Best_Rent_A_Car.Controllers
 
             return View(await userOrdersModels.ToListAsync());
         }
+        /// <summary>
+        /// An enum to convert from the pending bool to an appropriate string
+        /// </summary>
+        /// <param name="pending">input boolean, coming from the database field of pending</param>
+        /// <returns>returns "Approved"</returns>
         private static string PendingEnum(bool pending)
         {
             if (pending) return "Not Approved";
             else return "Appoved";
         }
+        /// <summary>
+        /// A view to contain shortened and concise data for reservations as well as the cars assigned to them
+        /// </summary>
         public class ReservationIndexViewModel
         {
             public int carID { get; set; }
@@ -80,17 +103,24 @@ namespace Best_Rent_A_Car.Controllers
             public double TotalAmount { get; set; } = 0;
 
         }
-
+        /// <summary>
+        /// A search method with the logic of using the input params to find all cars, which are not busy
+        /// and then redirect the user to a make a reservation page which has all the available cars listed
+        /// </summary>
+        /// <param name="startDate"> startDate from the users query in the search view</param>
+        /// <param name="endDate"> endDate from the users query in the search view</param>
+        /// <returns></returns>
         // POST: CarReservations/Search
         [HttpPost]
         public IActionResult Search(DateTime startDate, DateTime endDate)
         {
             if (startDate<endDate&& startDate>DateTime.Now)
             {
+                var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var availableCarsQuery = _context.Cars
-                    .Where(c => !_context.CarReservations
+                    .Where(c => (!_context.CarReservations.Where(cr=>cr.VisibleUserID!=loggedInUserId)
                     .Any(cr => cr.CarID == c.Id &&
-                    (cr.StartDate <= endDate && cr.EndDate >= startDate)));
+                    (cr.StartDate <= endDate && cr.EndDate >= startDate))));
 
                 var availableCarsList = availableCarsQuery
                     .Select(c => new ReservationViewModel
@@ -106,7 +136,6 @@ namespace Best_Rent_A_Car.Controllers
                     AvailableCars = availableCarsList
                 };
 
-                var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 ViewData["LoggedInUserId"] = loggedInUserId;
 
                 ViewData["StartDate"] = startDate.ToString();
@@ -134,6 +163,9 @@ namespace Best_Rent_A_Car.Controllers
             }
             return View("Search");
         }
+        /// <summary>
+        /// A view model for the reservations that has their compact info
+        /// </summary>
         public class ReservationViewModel
         {
             public int carID { get; set; }
@@ -145,7 +177,12 @@ namespace Best_Rent_A_Car.Controllers
         {
             return View("Search");
         }
-
+        /// <summary>
+        /// A method to list all the details of a certain request/reservation
+        /// </summary>
+        /// <param name="userId">part of the reservation PK</param>
+        /// <param name="carId">part of the reservation PK</param>
+        /// <returns></returns>
         // GET: CarReservations/Details/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(string userId, int carId)
@@ -167,7 +204,11 @@ namespace Best_Rent_A_Car.Controllers
 
             return View(carReservation);
         }
-
+        /// <summary>
+        /// A view Model for the car creation page to ensure that only the available cars are listed for the creation
+        /// </summary>
+        /// the CarReservation field is the one used by default by the creation view in order to get all the validations and align the fields for binding
+        /// the avialable cars List is the list of all the cars to show in the available cars section in the Create view
         public class CreateViewModel
         {
             public CarReservation CarReservation { get; set; }
@@ -179,9 +220,13 @@ namespace Best_Rent_A_Car.Controllers
             }
         }
 
-
+        /// <summary>
+        /// The httpGet method for the create view, while somewhat unused in the program it is a stable implementation to have
+        /// </summary>
+        /// <param name="carReservation"></param>
+        /// <returns></returns>
         // GET: CarReservations/Create
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         public IActionResult Create(CarReservation carReservation)
         {
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -196,7 +241,12 @@ namespace Best_Rent_A_Car.Controllers
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
             return View(carReservation);
         }
-
+        /// <summary>
+        /// The HttpGet for the Reserve, it takes the createViewModel and hands it to the view, as well as adding some data
+        /// to the viewdata.
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
         [HttpGet]
         [Microsoft.AspNetCore.Mvc.Route("CarReservations/Reserve")]
         public IActionResult Reserve(CreateViewModel viewModel)
@@ -219,7 +269,11 @@ namespace Best_Rent_A_Car.Controllers
             }
             return View("Search");
         }
-
+        /// <summary>
+        /// The HttpPost for the Reserve action it adds the reservation to the context
+        /// </summary>
+        /// <param name="carReservation">a binded property for the ReserveView</param>
+        /// <returns></returns>
         // POST: CarReservations/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -244,7 +298,12 @@ namespace Best_Rent_A_Car.Controllers
             CreateViewModel viewModel = new CreateViewModel();
             return View("Search");
         }
-
+        /// <summary>
+        /// The httpGet for the edit, supplies it with the appropriate Reservation given the Id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="carId"></param>
+        /// <returns></returns>
         // GET: CarReservations/Edit/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string userId, int carId)
@@ -266,7 +325,11 @@ namespace Best_Rent_A_Car.Controllers
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id", carReservation.VisibleUserID);
             return View(carReservation);
         }
-
+        /// <summary>
+        /// Binds the appropraite user through the view and edits the things that it has to edit idk figure it out
+        /// </summary>
+        /// <param name="carReservation"></param>
+        /// <returns></returns>
         // POST: CarReservations/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -283,7 +346,7 @@ namespace Best_Rent_A_Car.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CarReservationExists(carReservation.CarID))
+                    if (!CarReservationExists(carReservation.CarID, carReservation.VisibleUserID))
                     {
                         return NotFound();
                     }
@@ -298,7 +361,12 @@ namespace Best_Rent_A_Car.Controllers
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id", carReservation.VisibleUserID);
             return View(carReservation);
         }
-
+        /// <summary>
+        /// The HttpGet for the Delete action it finds a user through the supplied paramaters to send it into a deleteconfirmed
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="carId"></param>
+        /// <returns></returns>
         // GET: CarReservations/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string userId, int carId)
@@ -320,7 +388,12 @@ namespace Best_Rent_A_Car.Controllers
 
             return View(carReservation);
         }
-
+        /// <summary>
+        /// A decline method similar to the delete method except it is specifically applied to Pending reservations
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="carId"></param>
+        /// <returns></returns>
         // GET: CarReservations/Decline/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Decline(string userId, int carId)
@@ -342,7 +415,12 @@ namespace Best_Rent_A_Car.Controllers
 
             return View(carReservation);
         }
-
+        /// <summary>
+        /// Deleting pending reservations is a team based choice, the functionality could be altered so that declined reservations
+        /// are saved separately, but we found no purpose in doing this
+        /// </summary>
+        /// <param name="carReservation"></param>
+        /// <returns></returns>
         // POST: CarReservations/Decline
         [HttpPost, ActionName("Decline")]
         [ValidateAntiForgeryToken]
@@ -352,7 +430,11 @@ namespace Best_Rent_A_Car.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(PendingIndex));
         }
-
+        /// <summary>
+        /// A confirm window for the delete that also binds the carReservation
+        /// </summary>
+        /// <param name="carReservation"></param>
+        /// <returns></returns>
         // POST: CarReservations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -364,7 +446,13 @@ namespace Best_Rent_A_Car.Controllers
 
 
         }
-
+        /// <summary>
+        /// The HttpGet for the accept it displays the details of the query and asks the user if it wants to accept
+        /// the query
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="carId"></param>
+        /// <returns></returns>
         // GET: CarReservations/Accept/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Accept(string userId, int carId)
@@ -387,6 +475,12 @@ namespace Best_Rent_A_Car.Controllers
             return View(carReservation);
         }
 
+        /// <summary>
+        /// This is the result of the clicking of the accept button in the View, it sets the query's 
+        /// Pending property to true, thus making it a reservation
+        /// </summary>
+        /// <param name="carReservation"></param>
+        /// <returns></returns>
         // POST: CarReservations/Accept
         [HttpPost, ActionName("Accept")]
         [ValidateAntiForgeryToken]
@@ -400,10 +494,15 @@ namespace Best_Rent_A_Car.Controllers
         }
 
 
-
-        private bool CarReservationExists(int id)
+        /// <summary>
+        /// A regular exists method to check wheter or not a reservation exists
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns> true or false depending on if the reservation is actually available</returns>
+        private bool CarReservationExists(int id, string userId)
         {
-            return _context.CarReservations.Any(e => e.CarID == id);
+            return _context.CarReservations.Any(e => e.CarID == id&&e.VisibleUserID==userId);
         }
     }
 }
