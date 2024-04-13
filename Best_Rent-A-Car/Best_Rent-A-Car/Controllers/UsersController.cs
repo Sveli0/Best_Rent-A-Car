@@ -172,6 +172,7 @@ namespace Best_Rent_A_Car.Controllers
 
             public string FirstName { get; set; }
             public string LastName { get; set; }
+            [Display(Name = "Username")]
             public string UserName { get; set; }
             [Phone]
             [Display(Name = "Phone number")]
