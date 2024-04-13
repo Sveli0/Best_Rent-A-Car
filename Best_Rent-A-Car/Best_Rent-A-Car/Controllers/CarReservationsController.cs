@@ -37,10 +37,9 @@ namespace Best_Rent_A_Car.Controllers
             var list = _context.CarReservations.Include(c => c.Car).Where(x => x.StartDate > endDate || x.EndDate < startDate);
 
 
-            var list1 = list.Select(c => new CarViewModel
+            var list1 = list.Select(c => new ReservationViewModel
             {
-
-                PricePerDay = c.Car.PricePerDay,
+                carID = c.CarID,
                 Year = c.Car.Year,
                 Info = $"{c.Car.Brand} {c.Car.Model} Seats: {c.Car.Seats} Price Per Day: {c.Car.PricePerDay}"
             });
@@ -56,18 +55,23 @@ namespace Best_Rent_A_Car.Controllers
             viewModel.CarReservation.VisibleUserID = loggedInUserId;
             viewModel.EndDate = endDate;
             viewModel.StartDate = startDate;
+           viewModel.carID = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
+            {
+                Id = c.Id,
+                FullBrandAndModel = $"{c.Brand} {c.Model}"
+            }), "Id", "FullBrandAndModel"); ;
 
             return View("CreateSearch", viewModel);
 
 
 
         }
-        public class CarViewModel
+        public class ReservationViewModel
         {
-
-            public double PricePerDay { get; set; }
+            public int carID { get; set; }
             public int Year { get; set; }
             public string Info { get; set; }
+
         }
         // GET: CarReservations/Search
         // TODO: Authorize
@@ -93,7 +97,7 @@ namespace Best_Rent_A_Car.Controllers
             {
                 return NotFound();
             }
-
+            
             return View(carReservation);
         }
 
@@ -104,19 +108,20 @@ namespace Best_Rent_A_Car.Controllers
             public DateTime EndDate { get; set; }
             [DataType(DataType.Date)]
             public DateTime StartDate { get; set; }
-            public List<CarViewModel> AvailableCars { get; set; }
+            public List<ReservationViewModel> AvailableCars { get; set; }
+            public SelectList carID { get; set; }
 
             public CreateViewModel()
             {
                 CarReservation = new CarReservation();
-                AvailableCars = new List<CarViewModel>();
+                AvailableCars = new List<ReservationViewModel>();
             }
         }
 
 
         // GET: CarReservations/Create
         [Authorize]
-        public IActionResult Create(List<CarViewModel> availableCars)
+        public IActionResult Create(List<ReservationViewModel> availableCars)
         {
 
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -129,7 +134,7 @@ namespace Best_Rent_A_Car.Controllers
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
             }), "Id", "FullBrandAndModel"); ;
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
-            return View(viewModel);
+            return View(availableCars);
         }
 
         [HttpGet]
