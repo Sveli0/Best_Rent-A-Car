@@ -92,8 +92,7 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             if (Input.NewEmail != email)
             {
-                var token = _userManager.GenerateChangeEmailTokenAsync(user, Input.NewEmail);
-                await _userManager.ChangeEmailAsync(user, Input.NewEmail, token);
+                await _userManager.SetEmailAsync(user, Input.NewEmail);
 
                 StatusMessage = "Successfully changed email.";
                 return RedirectToPage();

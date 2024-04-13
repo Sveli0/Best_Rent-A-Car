@@ -27,7 +27,8 @@ a {
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 14px;
+    background-image: url('https://64.media.tumblr.com/9b786d5bc28ed0cbae2e52325b1a562c/b17bf92cb9052c9b-97/s1280x720/20db9d107e84e5c78ad814e5305fcfb18a1ef43b.jpg');
+    font-size: 14px;
 }
 @media (min-width: 768px) {
   html {
