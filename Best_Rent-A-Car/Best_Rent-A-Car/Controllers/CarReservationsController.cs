@@ -35,16 +35,16 @@ namespace Best_Rent_A_Car.Controllers
         {
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var userOrders = _context.CarReservations.Include(c => c.Car).Where(x => x.VisibleUserID==loggedInUserId);
+            var userOrders = _context.CarReservations.Include(c => c.Car).Where(x => x.VisibleUserID == loggedInUserId);
 
             var userOrdersModels = userOrders.Select(c => new ReservationIndexViewModel
             {
                 carID = c.CarID,
                 StartDate = c.StartDate,
-                EndDate=c.EndDate,
+                EndDate = c.EndDate,
                 Info = $"{c.Car.Brand} {c.Car.Model} Seats: {c.Car.Seats} Price Per Day: {c.Car.PricePerDay}"
             });
-            
+
             return View(await userOrdersModels.ToListAsync());
         }
 
@@ -53,7 +53,7 @@ namespace Best_Rent_A_Car.Controllers
             public int carID { get; set; }
 
             public DateTime StartDate { get; set; }
-            
+
             public DateTime EndDate { get; set; }
             public string Info { get; set; }
 
@@ -63,20 +63,24 @@ namespace Best_Rent_A_Car.Controllers
         [HttpPost]
         public IActionResult Search(DateTime startDate, DateTime endDate)
         {
-            var list = _context.CarReservations.Include(c => c.Car).Where(x => x.StartDate > endDate || x.EndDate < startDate);
+            var availableCarsQuery = _context.Cars
+    .Where(c => !_context.CarReservations
+        .Any(cr => cr.CarID == c.Id &&
+                   (cr.StartDate <= endDate && cr.EndDate >= startDate)));
 
-            var list1 = list.Select(c => new ReservationViewModel()
-            {
-                carID = c.CarID,
-                Year = c.Car.Year,
-                Info = $"{c.Car.Brand} {c.Car.Model} Seats: {c.Car.Seats} Price Per Day: {c.Car.PricePerDay}"
-            });
+            var availableCarsList = availableCarsQuery
+                .Select(c => new ReservationViewModel
+                {
+                    carID = c.Id,
+                    Year = c.Year,
+                    Info = $"{c.Brand} {c.Model} Seats: {c.Seats} Price Per Day: {c.PricePerDay}"
+                })
+                .ToList();
 
-
-            var viewModel = new CreateViewModel()
+            var viewModel = new CreateViewModel
             {
                 CarReservation = new CarReservation(),
-                AvailableCars = list1.ToList()
+                AvailableCars = availableCarsList
             };
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["LoggedInUserId"] = loggedInUserId;
@@ -85,13 +89,13 @@ namespace Best_Rent_A_Car.Controllers
 
             ViewData["EndDate"] = startDate;
 
-            
+
 
             viewModel.CarReservation.VisibleUserID = loggedInUserId;
             viewModel.CarReservation.EndDate = endDate;
             viewModel.CarReservation.StartDate = startDate;
 
-            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Where(x=>list1.Select(c=>c.carID).ToList().Contains(x.Id)).Select(c => new
+            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Where(x => availableCarsList.Select(c => c.carID).ToList().Contains(x.Id)).Select(c => new
             {
                 Id = c.Id,
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
@@ -134,7 +138,7 @@ namespace Best_Rent_A_Car.Controllers
             {
                 return NotFound();
             }
-            
+
             return View(carReservation);
         }
 
@@ -196,10 +200,10 @@ namespace Best_Rent_A_Car.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSearch([Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
         {
-            
+
             if (ModelState.IsValid)
             {
-                
+
                 _context.Add(carReservation);
                 await _context.SaveChangesAsync();
                 Random r = new Random();
