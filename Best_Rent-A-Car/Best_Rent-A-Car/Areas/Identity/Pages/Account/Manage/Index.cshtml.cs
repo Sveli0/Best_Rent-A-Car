@@ -35,6 +35,9 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account.Manage
         {
             [Phone]
             [Display(Name = "Phone number")]
+            [MinLength(7, ErrorMessage = "Phone number must between 7-15 symbols long.")]
+            [MaxLength(15, ErrorMessage = "Phone number must between 7-15 symbols long.")]
+            [RegularExpression("^[0-9]*$", ErrorMessage = "Phone number must contain only numbers.")]
             public string PhoneNumber { get; set; }
         }
 

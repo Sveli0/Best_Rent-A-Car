@@ -93,8 +93,6 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account.Manage
             if (Input.NewEmail != email)
             {
                 await _userManager.SetEmailAsync(user, Input.NewEmail);
-                
-
                 StatusMessage = "Successfully changed email.";
                 return RedirectToPage();
             }

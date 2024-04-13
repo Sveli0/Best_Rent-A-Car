@@ -229,7 +229,6 @@ namespace Best_Rent_A_Car.Controllers
 
                 if (a == 6)
                 {
-
                     return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
                 }
 
