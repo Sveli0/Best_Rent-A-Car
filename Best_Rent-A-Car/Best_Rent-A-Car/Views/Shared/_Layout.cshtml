@@ -42,6 +42,12 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="CarReservations" asp-action="Index">Reservations Manager</a>
                             </li>
                         }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">User Management</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
