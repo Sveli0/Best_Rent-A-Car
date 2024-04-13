@@ -25,14 +25,10 @@
                 <form1 asp-action="Search">
 
                     <div class="form-group">
-                        <label asp-for="CarReservation.StartDate" class="control-label"></label>
-                        <input asp-for="CarReservation.StartDate" class="form-control" />
-                        <span asp-validation-for="CarReservation.StartDate" class="text-danger"></span>
+                        <input asp-for="CarReservation.StartDate" type="hidden" class="form-control" value="@Model.StartDate" />
                     </div>
                     <div class="form-group">
-                        <label asp-for="CarReservation.EndDate" class="control-label"></label>
-                        <input asp-for="CarReservation.EndDate" class="form-control" value="EndDate" />
-                        <span asp-validation-for="CarReservation.EndDate" class="text-danger"></span>
+                        <input asp-for="CarReservation.EndDate" type="hidden" class="form-control" value="EndDate" />
                     </div>
                     <div class="form-group">
                         <input asp-for="CarReservation.VisibleUserID" type="hidden" class="form-control" value="@ViewData["LoggedInUserId"]" readonly />
@@ -45,7 +41,7 @@
             @foreach (var car in Model.AvailableCars)
             {
                 <div>
-                    <p>Brand: @car.Info</p>
+                    <p>Model: @car.Info</p>
                 </div>
             }
         </form>
