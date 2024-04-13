@@ -10,6 +10,7 @@ using Best_Rent_A_Car.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
+using System.ComponentModel.DataAnnotations;
 
 namespace Best_Rent_A_Car.Controllers
 {
@@ -88,6 +89,10 @@ namespace Best_Rent_A_Car.Controllers
         public class CreateViewModel
         {
             public CarReservation CarReservation { get; set; }
+            [DataType(DataType.Date)]
+            public int EndDate { get; set; }
+            [DataType(DataType.Date)]
+            public DateTime StartDate { get; set; }
             public List<CarViewModel> AvailableCars { get; set; } 
         }
 
