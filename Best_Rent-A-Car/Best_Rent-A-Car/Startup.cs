@@ -88,13 +88,16 @@ namespace Best_Rent_A_Car
                 string adminEmail = "admin@rentacar.bg";
                 string adminPassword = "Admin1234#";
 
-                if (await userManager.FindByEmailAsync(adminEmail)==null)
+                if (await userManager.FindByNameAsync(adminEmail)==null)
                 {
                     User admin = new User();
                     admin.UserName = adminEmail;
+                    admin.FirstName = "Karamfil";
+                    admin.LastName = "Karamfilov";
                     admin.EGN = "0000000000";
                     admin.Email = adminEmail;
                     admin.EmailConfirmed = true;
+                    admin.PhoneNumber="088maikatanarosen";
                     await userManager.CreateAsync(admin, adminPassword);
                     await userManager.AddToRoleAsync(admin, "Admin");
                 }

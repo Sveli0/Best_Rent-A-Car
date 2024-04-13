@@ -64,6 +64,16 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
             [RegularExpression("^[0-9]*$", ErrorMessage = "EGN must contain only numbers.")]
             [UniqueEGN]
             public string EGN { get; set; }
+
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string UserName { get; set; }
+            [Phone]
+            [Display(Name = "Phone number")]
+            [MinLength(7, ErrorMessage = "Phone number must between 7-15 symbols long.")]
+            [MaxLength(15, ErrorMessage = "Phone number must between 7-15 symbols long.")]
+            [RegularExpression("^[0-9]*$", ErrorMessage = "Phone number must contain only numbers.")]
+            public string PhoneNumber { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -78,7 +88,7 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new User { EGN = Input.EGN, UserName = Input.Email, Email = Input.Email };
+                var user = new User { EGN = Input.EGN,FirstName=Input.FirstName,LastName=Input.LastName, UserName = Input.UserName, Email = Input.Email ,PhoneNumber=Input.PhoneNumber};
                 user.EmailConfirmed = true;
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 await _userManager.AddToRoleAsync(user, "Customer");
