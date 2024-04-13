@@ -13,7 +13,7 @@
 }
 <h1>Create</h1>
 
-<h4>CarReservation</h4>
+<h4>Request A Car Reservation</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -38,17 +38,17 @@
                         <input asp-for="CarReservation.VisibleUserID" type="hidden" class="form-control" value="@ViewData["LoggedInUserId"]" readonly />
                     </div>
             </div>
-                    <div class="form-group">
-                        <input type="submit" value="Create" class="btn btn-primary" />
-                    </div>
-                    <h2>Available Cars</h2>
-                    @foreach (var car in Model.AvailableCars)
-                    {
-                        <div>
-                            <p>Brand: @car.Brand</p>
-                            <p>Model: @car.Model</p>
-                        </div>
-                    }
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <h2>Available Cars</h2>
+            @foreach (var car in Model.AvailableCars)
+            {
+                <div>
+                    <p>Brand: @car.Brand</p>
+                    <p>Model: @car.Model</p>
+                </div>
+            }
         </form>
     </div>
 </div>
