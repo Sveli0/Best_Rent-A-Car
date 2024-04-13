@@ -22,11 +22,19 @@ namespace Best_Rent_A_Car.Controllers
             _context = context;
         }
 
+
+        // GET: CarReservations/PendingIndex
+
+        public async Task<IActionResult> PendingIndex() 
+        {
+            var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User).Where(c => c.Pending);
+            return View(await applicationDbContext.ToListAsync());
+        }
         // GET: CarReservations
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User);
+            var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User).Where(c=>!c.Pending);
             return View(await applicationDbContext.ToListAsync());
         }
         //Get: CarReservations/IndexUserReservations
@@ -63,20 +71,24 @@ namespace Best_Rent_A_Car.Controllers
         [HttpPost]
         public IActionResult Search(DateTime startDate, DateTime endDate)
         {
-            var list = _context.CarReservations.Include(c => c.Car).Where(x => x.StartDate > endDate || x.EndDate < startDate);
+            var availableCarsQuery = _context.Cars
+    .Where(c => !_context.CarReservations
+        .Any(cr => cr.CarID == c.Id &&
+                   (cr.StartDate <= endDate && cr.EndDate >= startDate)));
 
-            var list1 = list.Select(c => new ReservationViewModel()
-            {
-                carID = c.CarID,
-                Year = c.Car.Year,
-                Info = $"{c.Car.Brand} {c.Car.Model} Seats: {c.Car.Seats} Price Per Day: {c.Car.PricePerDay}"
-            });
+            var availableCarsList = availableCarsQuery
+                .Select(c => new ReservationViewModel
+                {
+                    carID = c.Id,
+                    Year = c.Year,
+                    Info = $"{c.Brand} {c.Model} | Seats: {c.Seats} | Price Per Day: {c.PricePerDay}"
+                }).ToList();
+                
 
-
-            var viewModel = new CreateViewModel()
+            var viewModel = new CreateViewModel
             {
                 CarReservation = new CarReservation(),
-                AvailableCars = list1.ToList()
+                AvailableCars = availableCarsList
             };
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["LoggedInUserId"] = loggedInUserId;
@@ -91,7 +103,7 @@ namespace Best_Rent_A_Car.Controllers
             viewModel.CarReservation.EndDate = endDate;
             viewModel.CarReservation.StartDate = startDate;
 
-            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Where(x=>list1.Select(c=>c.carID).ToList().Contains(x.Id)).Select(c => new
+            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Where(x=>availableCarsList.Select(c=>c.carID).ToList().Contains(x.Id)).Select(c => new
             {
                 Id = c.Id,
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
@@ -292,6 +304,38 @@ namespace Best_Rent_A_Car.Controllers
             return View(carReservation);
         }
 
+        // GET: CarReservations/Decline
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Decline(string userId, int carId)
+        {
+            if (userId == null)
+            {
+                return NotFound();
+            }
+
+            var carReservation = await _context.CarReservations
+                .Include(c => c.Car)
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(m => m.CarID == carId && m.VisibleUserID == userId);
+
+            if (carReservation == null)
+            {
+                return NotFound();
+            }
+
+            return View(carReservation);
+        }
+
+        // POST: CarReservations/Decline
+        [HttpPost, ActionName("Decline")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeclineConfirmed([Bind("CarID,VisibleUserID")] CarReservation carReservation)
+        {
+            _context.CarReservations.Remove(carReservation);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(PendingIndex));
+        }
+
         // POST: CarReservations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -301,6 +345,9 @@ namespace Best_Rent_A_Car.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        
+        
 
         private bool CarReservationExists(int id)
         {

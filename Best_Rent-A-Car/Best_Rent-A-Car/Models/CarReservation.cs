@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Localization;
 
 namespace Best_Rent_A_Car.Models
 {
@@ -19,6 +20,7 @@ namespace Best_Rent_A_Car.Models
         [ForeignKey("User")]
         public string VisibleUserID { get ; set; }
         public User User { get; set; }
+        public bool Pending { get; set; } =true;
         public CarReservation()
         {
 
