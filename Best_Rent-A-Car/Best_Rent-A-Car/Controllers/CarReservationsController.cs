@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Best_Rent_A_Car.Data;
 using Best_Rent_A_Car.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Best_Rent_A_Car.Controllers
 {
@@ -24,6 +23,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User);
@@ -61,12 +61,14 @@ namespace Best_Rent_A_Car.Controllers
             public string Info { get; set; }
         }
         // GET: CarReservations/Search
+        // TODO: Authorize
         public IActionResult Search()
         {
             return View("Search");
         }
 
         // GET: CarReservations/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(string userId, int carId)
         {
             if (userId == null)
@@ -98,6 +100,7 @@ namespace Best_Rent_A_Car.Controllers
 
 
         // GET: CarReservations/Create
+        [Authorize]
         public IActionResult Create(List<CarViewModel> availableCars)
         {
             var viewModel = new CreateViewModel
@@ -144,6 +147,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string userId, int carId)
         {
             if (userId == null)
@@ -197,6 +201,7 @@ namespace Best_Rent_A_Car.Controllers
         }
 
         // GET: CarReservations/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string userId, int carId)
         {
             if (userId == null)
