@@ -64,11 +64,17 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
             [RegularExpression("^[0-9]*$", ErrorMessage = "EGN must contain only numbers.")]
             [UniqueEGN]
             public string EGN { get; set; }
-
+            [Display(Name = "First Name")]
+            [Required]
             public string FirstName { get; set; }
+            [Display(Name = "Last Name")]
+            [Required]
             public string LastName { get; set; }
+            [Display(Name = "Username")]
+            [Required]
             public string UserName { get; set; }
             [Phone]
+            [Required]
             [Display(Name = "Phone number")]
             [MinLength(7, ErrorMessage = "Phone number must between 7-15 symbols long.")]
             [MaxLength(15, ErrorMessage = "Phone number must between 7-15 symbols long.")]

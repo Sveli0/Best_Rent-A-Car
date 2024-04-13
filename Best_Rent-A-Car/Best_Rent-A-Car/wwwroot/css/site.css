@@ -12,12 +12,6 @@ a {
     color: #0366d6;
 }
 
-body {
-    background-image: url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/7d9598ea-a3c2-4f8e-af4c-d422a6c9f8a2/dg05b5s-0c4ee14a-1436-4709-a610-f1c4e2a7b0a8.jpg/v1/fit/w_375,h_214,q_70,strp/futuristic_car_by_grim7801_dg05b5s-375w.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzdkOTU5OGVhLWEzYzItNGY4ZS1hZjRjLWQ0MjJhNmM5ZjhhMlwvZGcwNWI1cy0wYzRlZTE0YS0xNDM2LTQ3MDktYTYxMC1mMWM0ZTJhN2IwYTguanBnIiwiaGVpZ2h0IjoiPD03MzIiLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS53YXRlcm1hcmsiXSwid21rIjp7InBhdGgiOiJcL3dtXC83ZDk1OThlYS1hM2MyLTRmOGUtYWY0Yy1kNDIyYTZjOWY4YTJcL2dyaW03ODAxLTQucG5nIiwib3BhY2l0eSI6OTUsInByb3BvcnRpb25zIjowLjQ1LCJncmF2aXR5IjoiY2VudGVyIn19.snKl6VtTqjCK3Hv-RMYbjq8OW6zNa53Yebb3g0BQw-Y");
-    background-size: cover;
-    color: white;
-}
-
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
