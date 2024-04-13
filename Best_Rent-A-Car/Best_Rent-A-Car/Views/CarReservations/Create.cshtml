@@ -1,7 +1,7 @@
 ﻿@using Best_Rent_A_Car.Data;
 @using Microsoft.AspNetCore.Identity;
 @using static Best_Rent_A_Car.Controllers.CarReservationsController
-@model Best_Rent_A_Car.Controllers.CarReservationsController.CreateViewModel
+@model Best_Rent_A_Car.Models.CarReservation
 
 @inject SignInManager<User> _signInManager;
 @inject UserManager<User> _userManager;
@@ -20,34 +20,27 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="CarReservation.CarID" class="control-label"></label>
-                <select asp-for="CarReservation.CarID" class="form-control" asp-items="ViewBag.Cars"></select>
+                <label asp-for="CarID" class="control-label"></label>
+                <select asp-for="CarID" class="form-control" asp-items="ViewBag.Cars"></select>
                 <form1 asp-action="Search">
 
                     <div class="form-group">
-                        <label asp-for="CarReservation.StartDate" class="control-label"></label>
-                        <input asp-for="CarReservation.StartDate" class="form-control" />
-                        <span asp-validation-for="CarReservation.StartDate" class="text-danger"></span>
+                        <label asp-for="StartDate" class="control-label"></label>
+                        <input asp-for="StartDate" class="form-control" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="CarReservation.EndDate" class="control-label"></label>
-                        <input asp-for="CarReservation.EndDate" class="form-control" value="EndDate" />
-                        <span asp-validation-for="CarReservation.EndDate" class="text-danger"></span>
+                        <label asp-for="EndDate" class="control-label"></label>
+                        <input asp-for="EndDate" class="form-control" value="EndDate" />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <input asp-for="CarReservation.VisibleUserID" type="hidden" class="form-control" value="@ViewData["LoggedInUserId"]" readonly />
+                        <input asp-for="VisibleUserID" type="hidden" class="form-control" value="@ViewData["LoggedInUserId"]" readonly />
                     </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-            <h2>Available Cars</h2>
-            @foreach (var car in Model.AvailableCars)
-            {
-                <div>
-                    <p>Brand: @car.Info</p>
-                </div>
-            }
+            </div>   
         </form>
     </div>
 </div>

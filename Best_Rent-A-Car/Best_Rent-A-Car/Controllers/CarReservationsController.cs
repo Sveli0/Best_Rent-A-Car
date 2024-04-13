@@ -121,7 +121,7 @@ namespace Best_Rent_A_Car.Controllers
 
         // GET: CarReservations/Create
         [Authorize]
-        public IActionResult Create(List<ReservationViewModel> availableCars)
+        public IActionResult Create(CarReservation carReservation)
         {
 
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -134,7 +134,7 @@ namespace Best_Rent_A_Car.Controllers
                 FullBrandAndModel = $"{c.Brand} {c.Model}"
             }), "Id", "FullBrandAndModel"); ;
             ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
-            return View(availableCars);
+            return View(carReservation);
         }
 
         [HttpGet]
@@ -156,29 +156,6 @@ namespace Best_Rent_A_Car.Controllers
             return View("Create", viewModel);
         }
 
-        // POST: CarReservations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CarID,StartDate,EndDate,VisibleUserID")] CarReservation carReservation)
-        {
-            if (ModelState.IsValid)
-            {
-
-                Random r = new Random();
-                int a = r.Next(10);
-                if (a == 6)
-                {
-
-                    return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
-                }
-                _context.Add(carReservation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Create));
-            }
-            return View(carReservation);
-        }
 
         // POST: CarReservations/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -199,7 +176,7 @@ namespace Best_Rent_A_Car.Controllers
                     return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
                 }
 
-                return RedirectToAction(nameof(Create));
+                return RedirectToAction(nameof(CreateSearch));
             }
             return View(carReservation);
         }
