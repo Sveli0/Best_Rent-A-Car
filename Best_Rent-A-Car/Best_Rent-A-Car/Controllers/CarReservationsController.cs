@@ -50,6 +50,7 @@ namespace Best_Rent_A_Car.Controllers
                 carID = c.CarID,
                 StartDate = c.StartDate,
                 EndDate = c.EndDate,
+                TotalAmount = (c.EndDate - c.StartDate).TotalDays * c.Car.PricePerDay,
                 Pending = PendingEnum(c.Pending),
                 Info = $"{c.Car.Brand} {c.Car.Model} {c.Car.Year} | Seats: {c.Car.Seats} | Price Per Day: {c.Car.PricePerDay}"
 
