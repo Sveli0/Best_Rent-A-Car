@@ -80,7 +80,7 @@ namespace Best_Rent_A_Car.Controllers
         [HttpPost]
         public IActionResult Search(DateTime startDate, DateTime endDate)
         {
-            if (startDate<endDate&& endDate>DateTime.Now)
+            if (startDate<endDate&& startDate>DateTime.Now)
             {
                 var availableCarsQuery = _context.Cars
                     .Where(c => !_context.CarReservations
