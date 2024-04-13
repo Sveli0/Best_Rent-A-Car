@@ -23,7 +23,10 @@ namespace Best_Rent_A_Car.Controllers
             _context = context;
             _userManager = userManager;
         }
-
+        /// <summary>
+        /// An index showing info for all the users
+        /// </summary>
+        /// <returns></returns>
         // GET: Users
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
@@ -31,7 +34,11 @@ namespace Best_Rent_A_Car.Controllers
             return View(await _context.Users.ToListAsync());
         }
 
-
+        /// <summary>
+        /// A specific details page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: UserController/Details/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(string? id)
@@ -50,6 +57,11 @@ namespace Best_Rent_A_Car.Controllers
 
             return View(user);
         }
+        /// <summary>
+        /// The HttpGet for the Edit functionality of the User
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: UserController/Edit/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string? id)
@@ -68,11 +80,19 @@ namespace Best_Rent_A_Car.Controllers
             model.User = user;
             return View(model);
         }
-
+        /// <summary>
+        /// The httpost for the edit of the user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="password"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        /// This method takes some of the paramaters binded while others directly, password is taken directly
+        /// so it can be hashed, while the 
         // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id,string password, [Bind("Id,EGN,PasswordHash,Email,UserName")] User user)
+        public async Task<IActionResult> Edit(string id, string password, string phonenumber, [Bind("Id,EGN,PasswordHash,Email,UserName,FirstName,LastName,PhoneNumber")] User user)
         {
             if (id != user.Id)
             {
@@ -89,6 +109,9 @@ namespace Best_Rent_A_Car.Controllers
                     user2.EGN = user.EGN;
                     user2.Email = user.Email;
                     user2.UserName = user.UserName;
+                    user2.PhoneNumber = phonenumber;
+                    user2.FirstName = user.FirstName;
+                    user2.LastName = user.LastName;
                     if (password != null)
                     {
                         string newPassword = _userManager.PasswordHasher.HashPassword(user, password);
@@ -109,8 +132,9 @@ namespace Best_Rent_A_Car.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(user);
+            EditViewModel model = new EditViewModel();
+            model.User= user;
+            return View(model);
         }
 
         // GET: UserController/Delete/5
