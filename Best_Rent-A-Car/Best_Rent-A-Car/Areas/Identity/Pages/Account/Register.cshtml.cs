@@ -91,9 +91,10 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
                 var user = new User { EGN = Input.EGN,FirstName=Input.FirstName,LastName=Input.LastName, UserName = Input.UserName, Email = Input.Email ,PhoneNumber=Input.PhoneNumber};
                 user.EmailConfirmed = true;
                 var result = await _userManager.CreateAsync(user, Input.Password);
-                await _userManager.AddToRoleAsync(user, "Customer");
+                
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, "Customer");
                     _logger.LogInformation("User created a new account with password.");
 
 
