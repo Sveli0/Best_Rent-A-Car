@@ -25,7 +25,7 @@ namespace Best_Rent_A_Car.Controllers
 
         // GET: CarReservations/PendingIndex
 
-        public async Task<IActionResult> PendingIndex() 
+        public async Task<IActionResult> PendingIndex()
         {
             var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User).Where(c => c.Pending);
             return View(await applicationDbContext.ToListAsync());
@@ -34,7 +34,7 @@ namespace Best_Rent_A_Car.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User).Where(c=>!c.Pending);
+            var applicationDbContext = _context.CarReservations.Include(c => c.Car).Include(c => c.User).Where(c => !c.Pending);
             return View(await applicationDbContext.ToListAsync());
         }
         //Get: CarReservations/UserReservations
@@ -52,12 +52,12 @@ namespace Best_Rent_A_Car.Controllers
                 EndDate = c.EndDate,
                 Pending = PendingEnum(c.Pending),
                 Info = $"{c.Car.Brand} {c.Car.Model} {c.Car.Year} | Seats: {c.Car.Seats} | Price Per Day: {c.Car.PricePerDay}"
-                
+
             });
 
             return View(await userOrdersModels.ToListAsync());
         }
-        private static string PendingEnum(bool pending) 
+        private static string PendingEnum(bool pending)
         {
             if (pending) return "Not Approved";
             else return "Appoved";
@@ -70,7 +70,7 @@ namespace Best_Rent_A_Car.Controllers
 
             public DateTime EndDate { get; set; }
             public string Info { get; set; }
-            public string Pending { get; set; } 
+            public string Pending { get; set; }
 
         }
 
@@ -78,50 +78,54 @@ namespace Best_Rent_A_Car.Controllers
         [HttpPost]
         public IActionResult Search(DateTime startDate, DateTime endDate)
         {
-            var availableCarsQuery = _context.Cars
-                .Where(c => !_context.CarReservations
-                .Any(cr => cr.CarID == c.Id &&
-                (cr.StartDate <= endDate && cr.EndDate >= startDate)));
+            if (ModelState.IsValid)
+            {
+                var availableCarsQuery = _context.Cars
+                    .Where(c => !_context.CarReservations
+                    .Any(cr => cr.CarID == c.Id &&
+                    (cr.StartDate <= endDate && cr.EndDate >= startDate)));
 
-            var availableCarsList = availableCarsQuery
-                .Select(c => new ReservationViewModel
+                var availableCarsList = availableCarsQuery
+                    .Select(c => new ReservationViewModel
+                    {
+                        carID = c.Id,
+                        Info = $"{c.Brand} {c.Model} {c.Year} | Seats: {c.Seats} | Price Per Day: {c.PricePerDay}"
+                    })
+                    .ToList();
+
+                var viewModel = new CreateViewModel
                 {
-                    carID = c.Id,
-                    Info = $"{c.Brand} {c.Model} {c.Year} | Seats: {c.Seats} | Price Per Day: {c.PricePerDay}"
-                })
-                .ToList();
+                    CarReservation = new CarReservation(),
+                    AvailableCars = availableCarsList
+                };
 
-            var viewModel = new CreateViewModel
-            {
-                CarReservation = new CarReservation(),
-                AvailableCars = availableCarsList
-            };
+                var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                ViewData["LoggedInUserId"] = loggedInUserId;
 
-            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ViewData["LoggedInUserId"] = loggedInUserId;
+                ViewData["StartDate"] = startDate.ToString();
 
-            ViewData["StartDate"] = startDate.ToString();
+                ViewData["EndDate"] = startDate;
 
-            ViewData["EndDate"] = startDate;
+                viewModel.CarReservation.VisibleUserID = loggedInUserId;
+                viewModel.CarReservation.EndDate = endDate;
+                viewModel.CarReservation.StartDate = startDate;
 
-            viewModel.CarReservation.VisibleUserID = loggedInUserId;
-            viewModel.CarReservation.EndDate = endDate;
-            viewModel.CarReservation.StartDate = startDate;
+                ViewData["Cars"] = new SelectList(_context.Cars
+                    .OrderBy(x => x.Brand)
+                    .ThenBy(x => x.Model)
+                    .Where(x => availableCarsList
+                    .Select(c => c.carID)
+                    .ToList()
+                    .Contains(x.Id))
+                    .Select(c => new
+                    {
+                        Id = c.Id,
+                        FullBrandAndModel = $"{c.Brand} {c.Model}"
+                    }), "Id", "FullBrandAndModel");
 
-            ViewData["Cars"] = new SelectList(_context.Cars
-                .OrderBy(x => x.Brand)
-                .ThenBy(x => x.Model)
-                .Where(x => availableCarsList
-                .Select(c => c.carID)
-                .ToList()
-                .Contains(x.Id))
-                .Select(c => new
-            {
-                Id = c.Id,
-                FullBrandAndModel = $"{c.Brand} {c.Model}"
-            }), "Id", "FullBrandAndModel");
-
-            return View("Reserve", viewModel);
+                return View("Reserve", viewModel);
+            }
+            return View("Search");
         }
         public class ReservationViewModel
         {
@@ -193,18 +197,18 @@ namespace Best_Rent_A_Car.Controllers
             if (ModelState.IsValid)
             {
 
-            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ViewData["LoggedInUserId"] = loggedInUserId;
+                var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                ViewData["LoggedInUserId"] = loggedInUserId;
 
-            ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
-            {
-                Id = c.Id,
-                FullBrandAndModel = $"{c.Brand} {c.Model}"
-            }), "Id", "FullBrandAndModel");
+                ViewData["Cars"] = new SelectList(_context.Cars.OrderBy(x => x.Brand).ThenBy(x => x.Model).Select(c => new
+                {
+                    Id = c.Id,
+                    FullBrandAndModel = $"{c.Brand} {c.Model}"
+                }), "Id", "FullBrandAndModel");
 
-            ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
+                ViewData["VisibleUserID"] = new SelectList(_context.Users, "Id", "Id");
 
-            return View("Create", viewModel);
+                return View("Create", viewModel);
             }
             return View("Search");
         }
@@ -232,7 +236,7 @@ namespace Best_Rent_A_Car.Controllers
                 return RedirectToAction(nameof(UserReservations));
             }
             CreateViewModel viewModel = new CreateViewModel();
-            return View(viewModel);
+            return View("Search");
         }
 
         // GET: CarReservations/Edit/5
