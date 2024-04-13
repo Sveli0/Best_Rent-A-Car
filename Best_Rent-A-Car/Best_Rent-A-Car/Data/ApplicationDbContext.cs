@@ -24,12 +24,21 @@ namespace Best_Rent_A_Car.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
             builder
-            .Entity<CarReservation>()
-            .HasKey(x => new { x.CarID, x.VisibleUserID });
-
-
+                .Entity<CarReservation>()
+                .HasKey(x => new { x.CarID, x.VisibleUserID });
+            builder
+                .Entity<User>()
+                .HasIndex(x => x.EGN)
+                .IsUnique();
+            builder
+                .Entity<User>()
+                .HasIndex(x => x.UserName)
+                .IsUnique();
+            builder
+                .Entity<User>()
+                .HasIndex(x => x.Email)
+                .IsUnique();
             base.OnModelCreating(builder);
         }
     }

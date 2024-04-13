@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Best_Rent_A_Car.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Best_Rent_A_Car.Models.Attributes;
 
 namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
 {
@@ -46,6 +42,7 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
         {
             [Required]
             [EmailAddress]
+            [UniqueEmail]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
@@ -61,11 +58,12 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             [Required]
-            [MinLength(10,ErrorMessage ="EGN must be 10 symbols long.")]
-            [MaxLength(10,ErrorMessage ="EGN must be 10 symbols long.")]
-            [Display(Name ="EGN")]
+            [MinLength(10, ErrorMessage = "EGN must be 10 symbols long.")]
+            [MaxLength(10, ErrorMessage = "EGN must be 10 symbols long.")]
+            [Display(Name = "EGN")]
             [RegularExpression("^[0-9]*$", ErrorMessage = "EGN must contain only numbers.")]
-            public string EGN {  get; set; }    
+            [UniqueEGN]
+            public string EGN { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -80,8 +78,8 @@ namespace Best_Rent_A_Car.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = Input.Email, Email = Input.Email };
-                    user.EmailConfirmed = true;
+                var user = new User { EGN = Input.EGN, UserName = Input.Email, Email = Input.Email };
+                user.EmailConfirmed = true;
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 await _userManager.AddToRoleAsync(user, "Customer");
                 if (result.Succeeded)
