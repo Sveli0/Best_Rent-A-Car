@@ -115,7 +115,7 @@ namespace Best_Rent_A_Car.Controllers
         [HttpPost]
         public IActionResult Search(DateTime startDate, DateTime endDate)
         {
-            if (startDate<endDate&& startDate>DateTime.Now)
+            if (startDate<endDate&& startDate>DateTime.Now && endDate.Year<=(DateTime.Now.Year+3))
             {
                 var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
