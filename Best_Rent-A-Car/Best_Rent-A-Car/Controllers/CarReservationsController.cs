@@ -204,6 +204,27 @@ namespace Best_Rent_A_Car.Controllers
 
             return View(carReservation);
         }
+        // GET: CarReservations/DetailsPending/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DetailsPending(string userId, int carId)
+        {
+            if (userId == null)
+            {
+                return NotFound();
+            }
+
+            var carReservation = await _context.CarReservations
+                .Include(c => c.Car)
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(m => m.VisibleUserID == userId && m.CarID == carId);
+
+            if (carReservation == null)
+            {
+                return NotFound();
+            }
+
+            return View(carReservation);
+        }
         /// <summary>
         /// A view Model for the car creation page to ensure that only the available cars are listed for the creation
         /// </summary>
