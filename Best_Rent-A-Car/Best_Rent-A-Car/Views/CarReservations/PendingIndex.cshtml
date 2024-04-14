@@ -38,7 +38,7 @@
             <td>
                 @Html.ActionLink("Accept", "Accept", new { userId = item.User.Id, carId = item.CarID }) |
                 @Html.ActionLink("Decline", "Decline", new { userId = item.User.Id, carId = item.CarID }) |
-                @Html.ActionLink("Details", "Details", new { userId = item.User.Id, carId = item.CarID })
+                @Html.ActionLink("Details", "DetailsPending", new { userId = item.User.Id, carId = item.CarID })
             </td>
         </tr>
 }
