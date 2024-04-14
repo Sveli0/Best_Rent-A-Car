@@ -8,6 +8,9 @@ namespace Best_Rent_A_Car.Controllers
 {
     public class HomeController : Controller
     {
+        /// <summary>
+        /// An auto generated simple home controller
+        /// </summary>
         ApplicationDbContext context = new ApplicationDbContext();
         private readonly ILogger<HomeController> _logger;
 

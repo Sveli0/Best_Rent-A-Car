@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Best_Rent_A_Car.Models.Attributes;
+using System.Threading;
 
 namespace Best_Rent_A_Car.Controllers
 {
@@ -117,12 +118,31 @@ namespace Best_Rent_A_Car.Controllers
             if (startDate<endDate&& startDate>DateTime.Now)
             {
                 var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var availableCarsQuery = _context.Cars
-                    .Where(c => (!_context.CarReservations.Where(cr=>cr.VisibleUserID!=loggedInUserId)
-                    .Any(cr => cr.CarID == c.Id &&
-                    (cr.StartDate <= endDate && cr.EndDate >= startDate))));
 
-                var availableCarsList = availableCarsQuery
+                var nonUserQueryIds = _context.CarReservations
+                    .Where(cr => cr.VisibleUserID != loggedInUserId)
+                    .Select(cr => cr.CarID)
+                    .ToList();
+                var nonReservedCars = _context.Cars.Where(c => !_context.CarReservations.Select(cr => cr.CarID).ToList().Contains(c.Id)).ToList();
+                var availableCarsList = _context.CarReservations
+                    .Include(cr => cr.Car)
+                    .Where(cr => cr.StartDate > endDate || cr.EndDate < startDate)
+                    .Where(cr=>cr.VisibleUserID!=loggedInUserId)
+                    .Select(c => new Car()
+                    {
+                        Id = c.Car.Id,
+                        Brand = c.Car.Brand,
+                        Model = c.Car.Model,
+                        Info = c.Car.Info,
+                        PricePerDay = c.Car.PricePerDay,
+                        Seats = c.Car.Seats,
+                        Year= c.Car.Year
+                    }).ToList();
+                foreach (var item in nonReservedCars)
+                {
+                    availableCarsList.Add(item);
+                }
+                var availableCarsInfoList = availableCarsList
                     .Select(c => new ReservationViewModel
                     {
                         carID = c.Id,
@@ -130,10 +150,12 @@ namespace Best_Rent_A_Car.Controllers
                     })
                     .ToList();
 
+
+
                 var viewModel = new CreateViewModel
                 {
                     CarReservation = new CarReservation(),
-                    AvailableCars = availableCarsList
+                    AvailableCars = availableCarsInfoList
                 };
 
                 ViewData["LoggedInUserId"] = loggedInUserId;
@@ -149,7 +171,7 @@ namespace Best_Rent_A_Car.Controllers
                 ViewData["Cars"] = new SelectList(_context.Cars
                     .OrderBy(x => x.Brand)
                     .ThenBy(x => x.Model)
-                    .Where(x => availableCarsList
+                    .Where(x => availableCarsInfoList
                     .Select(c => c.carID)
                     .ToList()
                     .Contains(x.Id))

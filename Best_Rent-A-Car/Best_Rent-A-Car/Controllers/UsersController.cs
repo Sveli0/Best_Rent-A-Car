@@ -136,7 +136,11 @@ namespace Best_Rent_A_Car.Controllers
             model.User= user;
             return View(model);
         }
-
+        /// <summary>
+        /// The httpGet for the delete it gets the info of a user through their id, to show in the confirmdelete view
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: UserController/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string? id)
@@ -155,7 +159,11 @@ namespace Best_Rent_A_Car.Controllers
             
             return View(user);
         }
-
+        /// <summary>
+        /// The HttpPost and action which occurs when the delete button is pressed, it removes the user from the database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // POST: UserController/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -166,10 +174,18 @@ namespace Best_Rent_A_Car.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        /// <summary>
+        /// checks if a user exists through their id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private bool UserExists(string id)
         {
             return _context.Users.Any(e => e.Id == id);
         }
+        /// <summary>
+        /// A view model to properly validate the fields in the Edit View
+        /// </summary>
         public class EditViewModel
         {
             public User User { get; set; }
