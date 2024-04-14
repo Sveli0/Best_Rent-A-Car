@@ -167,7 +167,11 @@ namespace Best_Rent_A_Car.Controllers
 
             return View(car);
         }
-
+        /// <summary>
+        /// The HttpPost for the deleteconfirm which happens when the delete button is pressed
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // POST: Cars/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -178,7 +182,11 @@ namespace Best_Rent_A_Car.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
+        /// <summary>
+        /// A simple method to show that the car with the given paramater existssa
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private bool CarExists(int id)
         {
             return _context.Cars.Any(e => e.Id == id);
