@@ -329,6 +329,15 @@ namespace Best_Rent_A_Car.Controllers
                 _context.Add(carReservation);
                 await _context.SaveChangesAsync();
 
+                Random r = new Random();
+
+                int a = r.Next(100);
+
+                if (a == 6)
+                {
+                    return Redirect("https://www.doyou.com/wp-content/uploads/2021/01/15-i-have-no-idea.jpg");
+                }  //EASTER EGG
+
                 return RedirectToAction(nameof(UserReservations));
             }
             CreateViewModel viewModel = new CreateViewModel();

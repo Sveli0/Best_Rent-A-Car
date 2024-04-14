@@ -40,7 +40,7 @@
             @foreach (var car in Model.AvailableCars)
             {
                 <div>
-                    <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.carID">Car: @car.Info</a>
+                    <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.carID" target="_blank">Car: @car.Info</a>
                 </div>
             }
         </form>
